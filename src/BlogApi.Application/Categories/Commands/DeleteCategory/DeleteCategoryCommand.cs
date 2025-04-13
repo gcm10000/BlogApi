@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace BlogApi.Application.Posts.Commands.CategoryCommands.DeleteCategory;
+namespace BlogApi.Application.Categories.Commands.DeleteCategory;
 
 // Command
 public class DeleteCategoryCommand : IRequest<bool>

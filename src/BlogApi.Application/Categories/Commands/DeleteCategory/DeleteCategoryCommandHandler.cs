@@ -2,7 +2,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace BlogApi.Application.Posts.Commands.CategoryCommands.DeleteCategory;
+namespace BlogApi.Application.Categories.Commands.DeleteCategory;
 
 // Command Handler
 public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand, bool>

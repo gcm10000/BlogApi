@@ -1,5 +1,5 @@
-﻿using BlogApi.Application.Posts.Commands.CategoryCommands.AddCategory;
-using BlogApi.Application.Posts.Commands.CategoryCommands.DeleteCategory;
+﻿using BlogApi.Application.Categories.Commands.AddCategory;
+using BlogApi.Application.Categories.Commands.DeleteCategory;
 using BlogApi.Application.Posts.Queries.GetCategoriesQuery;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
