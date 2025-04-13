@@ -1,4 +1,4 @@
-﻿using BlogApi.Application.Categories.Dto;
+﻿using BlogApi.Application.DTOs;
 using BlogApi.Application.Infrastructure.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

@@ -1,4 +1,4 @@
-﻿namespace BlogApi.Application.Categories.Dto;
+﻿namespace BlogApi.Application.DTOs;
 
 public class CategoryDto
 {

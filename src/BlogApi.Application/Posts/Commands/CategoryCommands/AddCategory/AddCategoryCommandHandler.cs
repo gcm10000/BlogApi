@@ -1,9 +1,9 @@
-﻿using BlogApi.Application.Categories.Dto;
+﻿using BlogApi.Application.DTOs;
 using BlogApi.Application.Infrastructure.Data;
 using BlogApi.Domain.Entities;
 using MediatR;
 
-namespace BlogApi.Application.Posts.Commands.AddCategory;
+namespace BlogApi.Application.Posts.Commands.CategoryCommands.AddCategory;
 
 // Command Handler
 public class AddCategoryCommandHandler : IRequestHandler<AddCategoryCommand, CategoryDto>

@@ -4,7 +4,7 @@ using BlogApi.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace BlogApi.Application.Posts.Commands.UpdatePost;
+namespace BlogApi.Application.Posts.Commands.PostCommands.UpdatePost;
 
 public class UpdatePostCommandHandler : IRequestHandler<UpdatePostCommand, PostDto>
 {

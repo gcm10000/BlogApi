@@ -1,4 +1,4 @@
-﻿using BlogApi.Application.Categories.Dto;
+﻿using BlogApi.Application.DTOs;
 using MediatR;
 
 namespace BlogApi.Application.Posts.Queries.GetCategoriesQuery;

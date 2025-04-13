@@ -5,7 +5,7 @@ using BlogApi.Application.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
-namespace BlogApi.Application.Posts.Commands.CreatePost;
+namespace BlogApi.Application.Posts.Commands.PostCommands.CreatePost;
 
 public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, PostDto>
 {

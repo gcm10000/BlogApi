@@ -1,7 +1,7 @@
 using MediatR;
 using BlogApi.Application.DTOs;
 
-namespace BlogApi.Application.Posts.Commands.CreatePost;
+namespace BlogApi.Application.Posts.Commands.PostCommands.CreatePost;
 
 public class CreatePostCommand : IRequest<PostDto>
 {

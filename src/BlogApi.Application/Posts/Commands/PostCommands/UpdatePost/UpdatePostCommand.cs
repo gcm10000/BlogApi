@@ -1,7 +1,7 @@
 ﻿using BlogApi.Application.DTOs;
 using MediatR;
 
-namespace BlogApi.Application.Posts.Commands.UpdatePost;
+namespace BlogApi.Application.Posts.Commands.PostCommands.UpdatePost;
 
 public class UpdatePostCommand : IRequest<PostDto>
 {
