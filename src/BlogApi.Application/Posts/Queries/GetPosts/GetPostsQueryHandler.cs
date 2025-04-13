@@ -4,7 +4,7 @@ using BlogApi.Application.Infrastructure.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace BlogApi.Application.Posts.Queries.GetPostsQuery;
+namespace BlogApi.Application.Posts.Queries.GetPosts;
 
 public class GetPostsQueryHandler : IRequestHandler<GetPostsQuery, PagedResponse<List<PostDto>>>
 {

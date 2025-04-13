@@ -1,11 +1,11 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using BlogApi.Application.Posts.Queries.GetPostById;
-using BlogApi.Application.Posts.Queries.GetPostsQuery;
 using BlogApi.Application.Posts.Commands.PostCommands.CreatePost;
 using BlogApi.Application.Posts.Commands.PostCommands.UpdatePost;
 using BlogApi.Application.Posts.Commands.PostCommands.UpdatePostStatus;
 using BlogApi.Application.Posts.Commands.PostCommands.DeletePost;
+using BlogApi.Application.Posts.Queries.GetPosts;
 
 namespace BlogApi.API.Controllers;
 

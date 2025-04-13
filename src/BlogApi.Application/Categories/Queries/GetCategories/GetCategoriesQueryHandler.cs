@@ -3,7 +3,7 @@ using BlogApi.Application.Infrastructure.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace BlogApi.Application.Posts.Queries.GetCategoriesQuery;
+namespace BlogApi.Application.Categories.Queries.GetCategories;
 
 // Query Handler
 public class GetCategoriesQueryHandler : IRequestHandler<GetCategoriesQuery, List<CategoryDto>>

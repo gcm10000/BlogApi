@@ -2,7 +2,7 @@
 using BlogApi.Application.DTOs;
 using MediatR;
 
-namespace BlogApi.Application.Posts.Queries.GetPostsQuery;
+namespace BlogApi.Application.Posts.Queries.GetPosts;
 
 public class GetPostsQuery : IRequest<PagedResponse<List<PostDto>>>
 {
