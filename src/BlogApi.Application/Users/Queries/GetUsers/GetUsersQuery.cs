@@ -4,7 +4,7 @@ using MediatR;
 
 namespace BlogApi.Application.Users.Queries.GetUsers;
 
-public class GetUsersQuery : IRequest<PagedResponse<UserDto>>
+public class GetUsersQuery : IRequest<PagedResponse<List<UserDto>>>
 {
     public int Page { get; set; }
     public int Limit { get; set; }

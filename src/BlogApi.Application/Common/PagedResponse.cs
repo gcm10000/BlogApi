@@ -8,7 +8,7 @@ public class PagedResponse<T>
         Total = total;
         Page = page;
         Limit = limit;
-        TotalPages = (int)Math.Ceiling((double)total / limit);
+        TotalPages = limit > 0 ? (int)Math.Ceiling((double)total / limit) : 0;
     }
 
     public T Data { get; set; }
