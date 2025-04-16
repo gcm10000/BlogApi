@@ -1,21 +1,32 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using BlogApi.Domain.Entities;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace BlogApi.Application.Infrastructure.Data;
 
 public class BlogDbContext : DbContext
 {
-    public BlogDbContext(DbContextOptions<BlogDbContext> options)
+    private readonly IEnumerable<ISaveChangesInterceptor> _auditableEntitySaveChangesInterceptor;
+
+    public BlogDbContext(DbContextOptions<BlogDbContext> options, IEnumerable<ISaveChangesInterceptor> auditableEntitySaveChangesInterceptor)
         : base(options)
     {
+        _auditableEntitySaveChangesInterceptor = auditableEntitySaveChangesInterceptor;
     }
     public DbSet<Post> Posts { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Author> Authors { get; set; }
+    public DbSet<Tenancy> Tenancies { get; set; }
+    public DbSet<PostView> PostViews { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Post>()
+            .HasIndex(p => new { p.TenancyId, p.Slug })
+            .IsUnique();
+
 
         modelBuilder.Entity<PostCategory>()
             .HasKey(pc => new { pc.PostId, pc.CategoryId });
@@ -29,5 +40,10 @@ public class BlogDbContext : DbContext
             .HasOne(pc => pc.Category)
             .WithMany(c => c.PostCategories)
             .HasForeignKey(pc => pc.CategoryId);
+    }
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.AddInterceptors(_auditableEntitySaveChangesInterceptor);
+
     }
 }

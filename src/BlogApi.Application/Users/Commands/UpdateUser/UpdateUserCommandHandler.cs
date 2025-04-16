@@ -1,6 +1,6 @@
 ﻿using BlogApi.Application.Auth.Dto;
 using BlogApi.Application.Infrastructure.Data;
-using BlogApi.Domain.Entities;
+using BlogApi.Application.Interfaces;
 using BlogApi.Infrastructure.Identity.Models;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -12,13 +12,16 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, UserD
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly BlogDbContext _context;
+    private readonly ICurrentUserService _currentUserService;
 
     public UpdateUserCommandHandler(
         UserManager<ApplicationUser> userManager,
-        BlogDbContext context)
+        BlogDbContext context,
+        ICurrentUserService currentUserService)
     {
         _userManager = userManager;
         _context = context;
+        _currentUserService = currentUserService;
     }
 
     public async Task<UserDto> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
@@ -48,8 +51,13 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, UserD
                 return null;
             }
 
+            var tenancyId = _currentUserService.GetCurrentTenancy();
+
             // Atualiza dados do Author
             var author = await _context.Authors
+                .Include(x => x.Tenancy)
+                .Where(x => x.Tenancy.DeletedAt == null)
+                .Where(x => x.TenancyId == tenancyId)
                 .FirstOrDefaultAsync(a => a.Id == request.Id, cancellationToken);
 
             if (author != null)
@@ -66,7 +74,6 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, UserD
             return new UserDto
             {
                 Id = user.AuthorId,
-                Username = user.UserName,
                 Name = user.Name,
                 Email = user.Email,
                 Role = user.Role,

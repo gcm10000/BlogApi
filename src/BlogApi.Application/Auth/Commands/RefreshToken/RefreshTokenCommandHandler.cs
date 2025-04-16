@@ -24,8 +24,8 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
         {
             return new AuthResponseDto
             {
-                Access_Token = null,
-                Refresh_Token = null,
+                access_token = null,
+                refresh_token = null,
                 User = null,
                 Success = false,
                 Message = "Refresh token inválido ou expirado."
@@ -38,7 +38,6 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
         var userDto = new UserDto
         {
             Id = user.AuthorId,
-            Username = user.UserName,
             Name = user.Name,
             Email = user.Email,
             Role = user.Role,
@@ -48,8 +47,8 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
 
         return new AuthResponseDto
         {
-            Access_Token = newAccessToken,
-            Refresh_Token = newRefreshToken,
+            access_token = newAccessToken,
+            refresh_token = newRefreshToken,
             User = userDto,
             Success = true
         };

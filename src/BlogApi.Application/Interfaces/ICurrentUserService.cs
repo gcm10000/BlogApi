@@ -9,4 +9,6 @@ public interface ICurrentUserService
     IEnumerable<Claim> GetClaims();
     Claim? GetRole();
     string? GetCurrentRoleAsString();
+    int GetCurrentTenancy();
+    int GetCurrentAuthorId();
 }

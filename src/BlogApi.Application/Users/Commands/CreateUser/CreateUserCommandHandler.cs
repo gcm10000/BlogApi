@@ -1,5 +1,6 @@
 ﻿using BlogApi.Application.Auth.Dto;
 using BlogApi.Application.Infrastructure.Data;
+using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Entities;
 using BlogApi.Infrastructure.Identity.Data;
 using BlogApi.Infrastructure.Identity.Models;
@@ -13,19 +14,24 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserD
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly BlogDbContext _context;
     private readonly IdentityDbContext _identityContext;
+    private readonly ICurrentUserService _currentUserService;
 
     public CreateUserCommandHandler(
         UserManager<ApplicationUser> userManager,
         BlogDbContext context,
-        IdentityDbContext identityContext)
+        IdentityDbContext identityContext,
+        ICurrentUserService currentUserService)
     {
         _userManager = userManager;
         _context = context;
         _identityContext = identityContext;
+        _currentUserService = currentUserService;
     }
 
     public async Task<UserDto> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
+        var tenancyId = _currentUserService.GetCurrentTenancy();
+
         await using var transactionBlogDb = await _context.Database.BeginTransactionAsync(cancellationToken);
         await using var transactionIdentityDb = await _identityContext.Database.BeginTransactionAsync(cancellationToken);
 
@@ -35,7 +41,8 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserD
             var author = new Author
             {
                 Name = request.Name,
-                Bio = ""
+                Bio = "",
+                TenancyId = tenancyId
             };
 
             _context.Authors.Add(author);
@@ -45,10 +52,14 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserD
             var user = new ApplicationUser
             {
                 Name = request.Name,
+                PasswordChangeRequired = true,
                 Role = request.Role,
                 UserName = request.Email,
                 Email = request.Email,
-                AuthorId = author.Id
+                AuthorId = author.Id,
+                TenancyDomainId = tenancyId,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             };
 
             var result = await _userManager.CreateAsync(user, request.Password);
@@ -71,7 +82,6 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserD
             return new UserDto
             {
                 Id = user.AuthorId,
-                Username = user.UserName,
                 Email = user.Email,
                 Name = author.Name,
                 Role = request.Role,

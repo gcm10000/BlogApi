@@ -9,4 +9,8 @@ public class ApplicationUser : IdentityUser
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     public int AuthorId { get; set; }
+    public int TenancyDomainId { get; set; }
+    public bool PasswordChangeRequired { get; set; }
+
+    public bool IsProtected { get; set; } = false;
 }

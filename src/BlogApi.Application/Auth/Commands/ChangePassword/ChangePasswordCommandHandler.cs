@@ -22,11 +22,16 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
             return new ChangePasswordResponseDto { Success = false, Message = "Usuário não encontrado" };
         }
 
-        var result = await _userManager.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        var result = await _userManager.ResetPasswordAsync(user, token, request.NewPassword);
+
         if (!result.Succeeded)
         {
             return new ChangePasswordResponseDto  { Success = false, Message = "Erro ao alterar senha", Errors = result.Errors.Select(x => $"{x.Code} - {x.Description}").ToList() };
         }
+
+        user.PasswordChangeRequired = false;
+        await _userManager.UpdateAsync(user);
 
         return new ChangePasswordResponseDto { Success = true, Message = "Senha alterada com sucesso" };
     }

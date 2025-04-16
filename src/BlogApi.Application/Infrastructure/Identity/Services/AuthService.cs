@@ -2,6 +2,7 @@
 using BlogApi.Application.Constants;
 using BlogApi.Application.Infrastructure.Identity.Configurations;
 using BlogApi.Application.Interfaces;
+using BlogApi.Application.Migrations.IdentityDb;
 using BlogApi.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -10,7 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-namespace BlogApi.Infrastructure.Identity.Services;
+namespace BlogApi.Application.Infrastructure.Identity.Services;
 
 public class AuthService : IAuthService
 {
@@ -45,12 +46,11 @@ public class AuthService : IAuthService
 
         return new AuthResponseDto
         {
-            Access_Token = token,
-            Refresh_Token = Guid.NewGuid().ToString(), // mock
+            access_token = token,
+            refresh_token = Guid.NewGuid().ToString(), // mock
             User = new UserDto
             {
                 Id = user.AuthorId,
-                Username = user.UserName,
                 Name = user.Name,
                 Email = user.Email,
                 Role = user.Role
@@ -72,34 +72,6 @@ public class AuthService : IAuthService
         var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
         return result.Succeeded;
     }
-
-    //private async Task<AuthResponseDto> GenerateToken(ApplicationUser user)
-    //{
-    //    var claims = await GetApplicationUserClaimsAsync(user);
-
-    //    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtOptions:SecurityKey"]));
-    //    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-    //    var token = new JwtSecurityToken(_config["JwtOptions:Issuer"],
-    //                                     _config["JwtOptions:Issuer"],
-    //                                     claims,
-    //                                     expires: DateTime.Now.AddHours(1),
-    //                                     signingCredentials: creds);
-
-    //    return new AuthResponseDto
-    //    {
-    //        Access_Token = new JwtSecurityTokenHandler().WriteToken(token),
-    //        Refresh_Token = Guid.NewGuid().ToString(), // mock
-    //        User = new UserDto
-    //        {
-    //            Id = user.AuthorId,
-    //            Username = user.UserName,
-    //            Name = user.Name,
-    //            Email = user.Email,
-    //            Role = user.Role
-    //        }
-    //    };
-    //}
 
     public async Task<string> GenerateAccessTokenAsync(ApplicationUser user, DateTime dateExpiration)
     {
@@ -131,6 +103,9 @@ public class AuthService : IAuthService
         var roles = await _userManager.GetRolesAsync(user);
 
         claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
+        claims.Add(new Claim(CustomClaimTypes.TenancyDomainId, user.TenancyDomainId.ToString()));
+        claims.Add(new Claim(CustomClaimTypes.AuthorId, user.AuthorId.ToString()));
+        claims.Add(new Claim(CustomClaimTypes.PasswordChangeRequired, user.PasswordChangeRequired.ToString()));
 
         if (user.Name is not null)
             claims.Add(new Claim(CustomClaimTypes.Name, user.Name));

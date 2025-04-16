@@ -1,4 +1,5 @@
-﻿using BlogApi.Application.Auth.Dto;
+﻿using BlogApi.API.Attributes;
+using BlogApi.Application.Auth.Dto;
 using BlogApi.Application.Common;
 using BlogApi.Application.Constants;
 using BlogApi.Application.Users.Commands.CreateUser;
@@ -13,7 +14,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace BlogApi.API.Controllers;
 
 [ApiController]
-[Route("api/v1/users")]
+//[Route("api/v1/users")]
+[TenancyApiControllerRouteV1("users")]
 public class UsersController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -69,10 +71,10 @@ public class UsersController : ControllerBase
     [Authorize(Roles = RoleConstants.Administrator)]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateUser([FromBody] CreateUserCommand command)
+    public async Task<IActionResult> CreateUser([FromRoute] int tenancyId, [FromBody] CreateUserCommand command)
     {
         var result = await _mediator.Send(command);
-        return CreatedAtAction(nameof(GetUserById), new { id = result.Id }, result);
+        return CreatedAtAction(nameof(GetUserById), new { tenancyId, id = result.Id }, result);
     }
 
     /// <summary>

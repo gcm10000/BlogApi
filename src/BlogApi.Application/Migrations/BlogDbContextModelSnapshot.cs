@@ -41,10 +41,15 @@ namespace BlogApi.Application.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<int>("TenancyId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TenancyId");
 
                     b.ToTable("Authors");
                 });
@@ -61,7 +66,12 @@ namespace BlogApi.Application.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<int>("TenancyId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TenancyId");
 
                     b.ToTable("Categories");
                 });
@@ -95,9 +105,16 @@ namespace BlogApi.Application.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<int>("TenancyId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -109,6 +126,9 @@ namespace BlogApi.Application.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
+
+                    b.HasIndex("TenancyId", "Slug")
+                        .IsUnique();
 
                     b.ToTable("Posts");
                 });
@@ -128,13 +148,102 @@ namespace BlogApi.Application.Migrations
                     b.ToTable("PostCategory");
                 });
 
+            modelBuilder.Entity("BlogApi.Domain.Entities.PostView", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("IPAddress")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserAgent")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("ViewedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("PostViews");
+                });
+
+            modelBuilder.Entity("BlogApi.Domain.Entities.Tenancy", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tenancies");
+                });
+
+            modelBuilder.Entity("BlogApi.Domain.Entities.Author", b =>
+                {
+                    b.HasOne("BlogApi.Domain.Entities.Tenancy", "Tenancy")
+                        .WithMany()
+                        .HasForeignKey("TenancyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tenancy");
+                });
+
+            modelBuilder.Entity("BlogApi.Domain.Entities.Category", b =>
+                {
+                    b.HasOne("BlogApi.Domain.Entities.Tenancy", "Tenancy")
+                        .WithMany()
+                        .HasForeignKey("TenancyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tenancy");
+                });
+
             modelBuilder.Entity("BlogApi.Domain.Entities.Post", b =>
                 {
-                    b.HasOne("BlogApi.Domain.Entities.Author", null)
+                    b.HasOne("BlogApi.Domain.Entities.Author", "Author")
                         .WithMany("Posts")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("BlogApi.Domain.Entities.Tenancy", "Tenancy")
+                        .WithMany()
+                        .HasForeignKey("TenancyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Tenancy");
                 });
 
             modelBuilder.Entity("BlogApi.Domain.Entities.PostCategory", b =>
@@ -152,6 +261,17 @@ namespace BlogApi.Application.Migrations
                         .IsRequired();
 
                     b.Navigation("Category");
+
+                    b.Navigation("Post");
+                });
+
+            modelBuilder.Entity("BlogApi.Domain.Entities.PostView", b =>
+                {
+                    b.HasOne("BlogApi.Domain.Entities.Post", "Post")
+                        .WithMany()
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Post");
                 });

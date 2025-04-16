@@ -79,32 +79,26 @@ public static class IoCExtensions
             policyBuilder.AddDefaultPolicy(policy =>
             {
                 var ASPNETCORE_ENVIRONMENT = configuration["ASPNETCORE_ENVIRONMENT"];
-#if DEBUG
+
                 if (ASPNETCORE_ENVIRONMENT == Environments.Development)
                 {
-                    policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyHeader().AllowAnyMethod();
+                    policy
+                        .SetIsOriginAllowed(_ => true) // aceita qualquer origem
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials(); // isso permite cookies, auth headers, etc.
                 }
-#endif
-
-                if (ASPNETCORE_ENVIRONMENT != Environments.Development)
+                else
                 {
                     var FRONT_END_URL = configuration["ENVIRONMENT_VARIABLE_FRONT_END_URL"];
                     policy.WithOrigins(FRONT_END_URL!)
-                                  .AllowAnyHeader()
-                                  .AllowAnyMethod();
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials(); // idem
                 }
-
-
-                //#if DEBUG
-                //                policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyHeader().AllowAnyMethod();
-                //#else
-                //                var allowedHost = configuration["AllowedHost"];
-                //                policy.WithOrigins(allowedHost).AllowAnyHeader().AllowAnyHeader().AllowAnyMethod();
-                //#endif
-
-
             })
         );
+
 
 
         return serviceCollection;

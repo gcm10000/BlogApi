@@ -1,4 +1,5 @@
-﻿using BlogApi.Application.Categories.Commands.AddCategory;
+﻿using BlogApi.API.Attributes;
+using BlogApi.Application.Categories.Commands.AddCategory;
 using BlogApi.Application.Categories.Commands.DeleteCategory;
 using BlogApi.Application.Categories.Queries.GetCategories;
 using BlogApi.Application.Constants;
@@ -11,7 +12,7 @@ namespace BlogApi.Api.Controllers;
 /// <summary>
 /// Gerencia categorias de postagens do blog.
 /// </summary>
-[Route("api/v1/categories")]
+[TenancyApiControllerRouteV1("categories")]
 [ApiController]
 public class CategoriesController : ControllerBase
 {

@@ -1,4 +1,5 @@
-﻿using BlogApi.Application.Infrastructure.Data;
+﻿using BlogApi.Application.Exceptions;
+using BlogApi.Application.Infrastructure.Data;
 using BlogApi.Infrastructure.Identity.Models;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -33,6 +34,10 @@ public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, bool>
                 await transaction.RollbackAsync(cancellationToken);
                 return false;
             }
+
+            if (user.IsProtected)
+                throw new BusinessRuleException("Este usuário não pode ser removido.");
+
 
             var identityResult = await _userManager.DeleteAsync(user);
 

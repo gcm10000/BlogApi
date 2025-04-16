@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BlogApi.Application.Infrastructure.Data.Interceptors;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,17 +13,18 @@ public static class IoCExtensions
         {
             ConfigureDatabaseProvider(options, configuration);
 
-            //AddInterceptors(sp, options);
+            AddInterceptors(sp, options);
         });
 
+        services.AddScoped<PublishDomainEventsInterceptor>();
         return services;
     }
 
-    //private static void AddInterceptors(IServiceProvider sp, DbContextOptionsBuilder options)
-    //{
-    //    options.AddInterceptors(sp.GetRequiredService<AuditableEntitySaveChangesInterceptor>());
-    //    options.AddInterceptors(sp.GetRequiredService<PublishDomainEventsInterceptor>());
-    //}
+    private static void AddInterceptors(IServiceProvider sp, DbContextOptionsBuilder options)
+    {
+        //options.AddInterceptors(sp.GetRequiredService<AuditableEntitySaveChangesInterceptor>());
+        options.AddInterceptors(sp.GetRequiredService<PublishDomainEventsInterceptor>());
+    }
 
     private static void ConfigureDatabaseProvider(DbContextOptionsBuilder optionsBuilder, IConfiguration configuration)
     {

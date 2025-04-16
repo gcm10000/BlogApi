@@ -1,8 +1,9 @@
 using BlogApi.API.IoC;
+using BlogApi.API.Middlewares;
+using BlogApi.Application.Auth.Commands.ChangePassword;
 using BlogApi.Application.Infrastructure.Data.IoC;
 using BlogApi.Application.Infrastructure.Identity.DataSeeders;
 using BlogApi.Application.IoC;
-using BlogApi.Application.Users.Commands.CreateUser;
 using BlogApi.Infrastructure.Identity.IoC;
 using MediatR;
 using System.Reflection;
@@ -26,6 +27,9 @@ builder.Services.ConfigureData(builder.Configuration);
 builder.Services.ConfigureIdentity(builder.Configuration);
 
 var app = builder.Build();
+app.UseStaticFiles();
+
+app.UseMiddleware<RequestLoggingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -58,15 +62,27 @@ using (var scope = app.Services.CreateScope())
 }
 
 
+//var tenancy = new CreateTenancyCommand
+//{
+//    Name = "Ozos"
+//};
+
+//var mediator1 = app.Services.CreateScope().ServiceProvider.GetRequiredService<IMediator>();
+//var tenancyResult = await mediator1.Send(tenancy);
+
+
 //var user = new CreateUserCommand()
 //{
 //    Email = "contato@ozos.com.br",
 //    Name = "Equipe Ozos",
 //    Password = "Ozos@123456",
 //    Role = "Administrator",
-
+//    TenancyDomainId = tenancyResult.Id
 //};
-//var mediator = app.Services.CreateScope().ServiceProvider.GetRequiredService<IMediator>();
-//await mediator.Send(user);
+
+//var s = new ChangePasswordCommand { NewPassword = "Ozos@123456", Username = "contato@ozos.com.br" };
+
+//var mediator2 = app.Services.CreateScope().ServiceProvider.GetRequiredService<IMediator>();
+//await mediator2.Send(s);
 
 app.Run();

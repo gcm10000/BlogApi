@@ -1,8 +1,11 @@
-﻿using BlogApi.Application.Auth.Commands.ChangePassword;
+﻿using BlogApi.API.Attributes;
+using BlogApi.API.Dto;
+using BlogApi.Application.Auth.Commands.ChangePassword;
 using BlogApi.Application.Auth.Commands.Login;
 using BlogApi.Application.Auth.Commands.RefreshToken;
 using BlogApi.Application.Auth.Dto;
 using BlogApi.Application.Constants;
+using BlogApi.Application.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,14 +13,16 @@ using Microsoft.AspNetCore.Mvc;
 namespace BlogApi.Controllers;
 
 [ApiController]
-[Route("api/v1/auth")]
+[TenancyApiControllerRouteV1("auth")]
 public class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private readonly ICurrentUserService _currentUserService;
 
-    public AuthController(IMediator mediator)
+    public AuthController(IMediator mediator, ICurrentUserService currentUserService)
     {
         _mediator = mediator;
+        _currentUserService = currentUserService;
     }
 
     /// <summary>
@@ -70,5 +75,22 @@ public class AuthController : ControllerBase
     {
         var result = await _mediator.Send(command);
         return Ok(result);
+    }
+
+    [HttpGet("me")]
+    [Authorize(Roles = RoleConstants.AdministratorAndAuthor)]
+    public IActionResult Me()
+    {
+        var claims = _currentUserService.GetClaims();
+        var passwordChangeRequired = bool.Parse(claims.FirstOrDefault(x => x.Type == CustomClaimTypes.PasswordChangeRequired)?.Value!);
+        var email = claims.FirstOrDefault(x => x.Type == CustomClaimTypes.EmailAddress)?.Value;
+
+        var role = _currentUserService.GetCurrentRoleAsString();
+        return Ok(new AuthResponse
+        {
+            Username = email,
+            Role = role,
+            PasswordChangeRequired = passwordChangeRequired
+        });
     }
 }

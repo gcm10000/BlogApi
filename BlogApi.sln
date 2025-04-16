@@ -3,17 +3,22 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlogApi.API", "src\BlogApi.API\BlogApi.API.csproj", "{D50F5A4A-BBF8-4A62-89E8-4D9B671E1452}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlogApi.API", "src\BlogApi.API\BlogApi.API.csproj", "{D50F5A4A-BBF8-4A62-89E8-4D9B671E1452}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlogApi.Application", "src\BlogApi.Application\BlogApi.Application.csproj", "{88A360A1-D286-4B03-AEB2-D09ED7ADB314}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlogApi.Application", "src\BlogApi.Application\BlogApi.Application.csproj", "{88A360A1-D286-4B03-AEB2-D09ED7ADB314}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlogApi.Domain", "src\BlogApi.Domain\BlogApi.Domain.csproj", "{018D39F8-5922-4F21-8216-5575B323C328}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlogApi.Domain", "src\BlogApi.Domain\BlogApi.Domain.csproj", "{018D39F8-5922-4F21-8216-5575B323C328}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1- Web", "1- Web", "{F2EE57AE-F776-464C-98A0-73243E3C9120}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2- Application", "2- Application", "{F91C3B80-A06A-45E7-B8AA-F261CD97BBB5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3- Domain", "3- Domain", "{61475C37-CD9B-4E0E-BA13-02F1451C4296}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FC94765B-5DA4-4AE1-9FB0-C2AA69A8E086}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

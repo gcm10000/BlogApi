@@ -1,10 +1,10 @@
 ﻿using BlogApi.Application.Constants;
 using BlogApi.Application.Infrastructure.Identity.Configurations;
 using BlogApi.Application.Infrastructure.Identity.DataSeeders;
+using BlogApi.Application.Infrastructure.Identity.Services;
 using BlogApi.Application.Interfaces;
 using BlogApi.Infrastructure.Identity.Data;
 using BlogApi.Infrastructure.Identity.Models;
-using BlogApi.Infrastructure.Identity.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
