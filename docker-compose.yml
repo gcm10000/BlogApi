@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  blogapi:
+    container_name: blogapi-prd
+    build:
+      context: .
+      dockerfile: ./src/BlogApi.API/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - DOTNET_RUNNING_IN_CONTAINER=true
+      - VIRTUAL_HOST=api.ozos.com.br
+      - VIRTUAL_PORT=8080
+      - LETSENCRYPT_HOST=api.ozos.com.br
+      - LETSENCRYPT_EMAIL=gabrielc.machado@hotmail.com
+      - ConnectionStrings__DATA_DATABASE=server=mariadb;port=3306;database=blogapi_db;user=bloguser;password=blogpass;
+      - ConnectionStrings__IDENTITY_DATABASE=server=mariadb;port=3306;database=blogapi_db;user=bloguser;password=blogpass;
+    depends_on:
+      - mariadb
+    networks:
+      - nginx-net
+    restart: always
+
+  mariadb:
+    image: mariadb:10.11
+    container_name: mariadb-blogapi
+    restart: always
+    environment:
+      MARIADB_DATABASE: blogapi_db
+      MARIADB_USER: bloguser
+      MARIADB_PASSWORD: blogpass
+      MARIADB_ROOT_PASSWORD: rootpass
+    volumes:
+      - blogapi-mariadb-data:/var/lib/mariadb
+    networks:
+      - nginx-net
+
+networks:
+  nginx-net:
+    external: true
+
+volumes:
+  blogapi-mariadb-data:
