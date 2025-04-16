@@ -36,6 +36,8 @@ services:
       MARIADB_ROOT_PASSWORD: rootpass
     volumes:
       - blogapi-mariadb-data:/var/lib/mariadb
+    ports:
+      - "3306:3306"  # Porta explicitamente mapeada
     networks:
       - nginx-net
 
