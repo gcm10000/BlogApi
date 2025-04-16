@@ -7,6 +7,9 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
+# Create the directory and set the correct permissions
+RUN mkdir -p /app/migrations && chmod -R 777 /app/migrations
+
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
