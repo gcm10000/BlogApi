@@ -47,3 +47,5 @@ networks:
 
 volumes:
   blogapi-mariadb-data:
+  blogapi-migrations:
+
