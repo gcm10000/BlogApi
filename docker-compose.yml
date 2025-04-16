@@ -22,6 +22,8 @@ services:
     networks:
       - nginx-net
     restart: always
+    volumes:
+      - ./data/migrations:/app/migrations  # Bind mount para os arquivos de marker (migrations)
 
   mariadb:
     image: mariadb:10.11
