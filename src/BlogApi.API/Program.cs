@@ -94,6 +94,29 @@ if (!File.Exists("identity_migration_marker.txt"))
     File.Create("identity_migration_marker.txt").Dispose();
 }
 
+
+using (var scope = app.Services.CreateScope())
+{
+    var roleSeeder = scope.ServiceProvider.GetRequiredService<RoleSeeder>();
+    await roleSeeder.SeedAsync();
+
+    // Caminho do arquivo marker
+    var rolemarkerFilePath = Path.Combine("/app/migrations", "role_seeder_marker.txt");
+
+    // Verifica se o marker já foi criado
+    if (!File.Exists(rolemarkerFilePath))
+    {
+        // Cria o arquivo marker indicando que o processo foi concluído
+        File.WriteAllText(rolemarkerFilePath, "RoleSeeder process completed.");
+    }
+    else
+    {
+        // Caso já tenha sido criado, apenas loga a informação
+        Console.WriteLine("RoleSeeder marker already exists. Process already completed.");
+    }
+}
+
+
 // Código original
 var mediator1 = app.Services.CreateScope().ServiceProvider.GetRequiredService<IMediator>();
 
@@ -119,27 +142,6 @@ else
 {
     // Caso já tenha sido criado, apenas loga a informação
     Console.WriteLine("Tenancy marker already exists. Process already completed.");
-}
-
-using (var scope = app.Services.CreateScope())
-{
-    var roleSeeder = scope.ServiceProvider.GetRequiredService<RoleSeeder>();
-    await roleSeeder.SeedAsync();
-
-    // Caminho do arquivo marker
-    var rolemarkerFilePath = Path.Combine("/app/migrations", "role_seeder_marker.txt");
-
-    // Verifica se o marker já foi criado
-    if (!File.Exists(rolemarkerFilePath))
-    {
-        // Cria o arquivo marker indicando que o processo foi concluído
-        File.WriteAllText(rolemarkerFilePath, "RoleSeeder process completed.");
-    }
-    else
-    {
-        // Caso já tenha sido criado, apenas loga a informação
-        Console.WriteLine("RoleSeeder marker already exists. Process already completed.");
-    }
 }
 
 //var user = new CreateUserCommand()
