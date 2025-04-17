@@ -54,7 +54,8 @@ public class AuthService : IAuthService
                 Name = user.Name,
                 Email = user.Email,
                 Role = user.Role
-            }
+            },
+            ClientId = user.TenancyDomainId
         };
     }
 

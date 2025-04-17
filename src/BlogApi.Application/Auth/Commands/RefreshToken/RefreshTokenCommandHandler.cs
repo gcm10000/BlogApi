@@ -19,6 +19,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
 
     public async Task<AuthResponseDto> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
+        // TODO
         var user = await _tokenService.GetUserByRefreshTokenAsync(request.RefreshToken);
         if (user == null)
         {
@@ -28,7 +29,8 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
                 refresh_token = null,
                 User = null,
                 Success = false,
-                Message = "Refresh token inválido ou expirado."
+                Message = "Refresh token inválido ou expirado.",
+                ClientId = null
             };
         }
 
@@ -50,7 +52,8 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
             access_token = newAccessToken,
             refresh_token = newRefreshToken,
             User = userDto,
-            Success = true
+            Success = true,
+            ClientId = null
         };
     }
 }

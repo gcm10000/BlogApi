@@ -13,7 +13,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace BlogApi.Controllers;
 
 [ApiController]
-[TenancyApiControllerRouteV1("auth")]
+//[TenancyApiControllerRouteV1("auth")]
+[Route("api/v1/auth")]
 public class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;

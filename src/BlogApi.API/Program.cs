@@ -106,17 +106,17 @@ app.MapControllers();
 //    // Caminho do arquivo marker
 //    var rolemarkerFilePath = Path.Combine("/app/migrations", "role_seeder_marker.txt");
 
-//    // Verifica se o marker já foi criado
-//    if (!File.Exists(rolemarkerFilePath))
-//    {
-//        // Cria o arquivo marker indicando que o processo foi concluído
-//        File.WriteAllText(rolemarkerFilePath, "RoleSeeder process completed.");
-//    }
-//    else
-//    {
-//        // Caso já tenha sido criado, apenas loga a informação
-//        Console.WriteLine("RoleSeeder marker already exists. Process already completed.");
-//    }
+//    //// Verifica se o marker já foi criado
+//    //if (!File.Exists(rolemarkerFilePath))
+//    //{
+//    //    // Cria o arquivo marker indicando que o processo foi concluído
+//    //    File.WriteAllText(rolemarkerFilePath, "RoleSeeder process completed.");
+//    //}
+//    //else
+//    //{
+//    //    // Caso já tenha sido criado, apenas loga a informação
+//    //    Console.WriteLine("RoleSeeder marker already exists. Process already completed.");
+//    //}
 //}
 
 
