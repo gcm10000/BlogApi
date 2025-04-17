@@ -36,7 +36,7 @@ services:
       MARIADB_PASSWORD: blogpass
       MARIADB_ROOT_PASSWORD: rootpass
     volumes:
-      - blogapi-mariadb-data:/var/lib/mariadb
+      - blogapi-mariadb-data:/var/lib/mysql
     ports:
       - "3306:3306"  # Porta explicitamente mapeada
     networks:
