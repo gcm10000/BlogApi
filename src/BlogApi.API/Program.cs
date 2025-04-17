@@ -31,6 +31,9 @@ builder.Services.ConfigureData(builder.Configuration);
 builder.Services.ConfigureIdentity(builder.Configuration);
 
 var app = builder.Build();
+
+app.UseCors();
+
 var DATA_DATABASE = app.Configuration.GetConnectionString("DATA_DATABASE");
 var IDENTITY_DATABASE = app.Configuration.GetConnectionString("IDENTITY_DATABASE");
 var ENVIRONMENT_VARIABLE_FRONT_END_URL = app.Configuration["ENVIRONMENT_VARIABLE_FRONT_END_URL"];
@@ -49,8 +52,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseCors();
 
 
 if (!app.Environment.IsDevelopment())
@@ -146,18 +147,6 @@ app.MapControllers();
 //    Console.WriteLine("Tenancy marker already exists. Process already completed.");
 //}
 
-//var user = new CreateUserCommand()
-//{
-//    Email = "contato@ozos.com.br",
-//    Name = "Equipe Ozos",
-//    Password = "Ozos@123456",
-//    Role = "Administrator",
-//    TenancyDomainId = tenancyResult.Id
-//};
 
-//var s = new ChangePasswordCommand { NewPassword = "Ozos@123456", Username = "contato@ozos.com.br" };
-
-//var mediator2 = app.Services.CreateScope().ServiceProvider.GetRequiredService<IMediator>();
-//await mediator2.Send(s);
 
 app.Run();
