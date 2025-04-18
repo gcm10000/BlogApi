@@ -11,7 +11,7 @@ EXPOSE 8081
 RUN mkdir -p /app/wwwroot/uploads && chmod -R 777 /app/wwwroot && chmod -R 777 /app/wwwroot/uploads
 
 # Voltar para o usuário padrão 'app'
-USER app
+#USER app
 
 # Usado para build do projeto
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
