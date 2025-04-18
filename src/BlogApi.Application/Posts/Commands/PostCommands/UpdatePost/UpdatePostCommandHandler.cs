@@ -8,6 +8,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using BlogApi.Application.Infrastructure;
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Logging;
 
 namespace BlogApi.Application.Posts.Commands.PostCommands.UpdatePost;
 
@@ -15,16 +16,21 @@ public class UpdatePostCommandHandler : IRequestHandler<UpdatePostCommand, PostD
 {
     private readonly BlogDbContext _db;
     private readonly ICurrentUserService _currentUserService;
+    private readonly ILogger<UpdatePostCommandHandler> _logger;
 
-    public UpdatePostCommandHandler(BlogDbContext db, ICurrentUserService currentUserService)
+    public UpdatePostCommandHandler(BlogDbContext db, ICurrentUserService currentUserService, ILogger<UpdatePostCommandHandler> logger)
     {
         _db = db;
         _currentUserService = currentUserService;
+        _logger = logger;
     }
 
     public async Task<PostDto> Handle(UpdatePostCommand request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Started handling UpdatePostCommand for Post ID: {PostId}", request.Id);
+
         var tenancyId = _currentUserService.GetCurrentTenancy();
+        _logger.LogInformation("Retrieved TenancyId: {TenancyId}", tenancyId);
 
         var post = await _db.Posts
             .Include(p => p.PostCategories)
@@ -33,7 +39,12 @@ public class UpdatePostCommandHandler : IRequestHandler<UpdatePostCommand, PostD
             .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
 
         if (post == null)
+        {
+            _logger.LogError("Post with ID: {PostId} not found.", request.Id);
             throw new BusinessRuleException("Post não encontrado.");
+        }
+
+        _logger.LogInformation("Post found. Updating Post with ID: {PostId}", post.Id);
 
         post.Title = request.Title;
         post.Slug = SlugHelper.GenerateSlug(request.Title);
@@ -42,48 +53,46 @@ public class UpdatePostCommandHandler : IRequestHandler<UpdatePostCommand, PostD
         post.Status = request.Status;
         post.UpdatedAt = DateTime.UtcNow;
 
-        //// Verifica se uma imagem foi enviada (ImageFile tem prioridade sobre ImageUrl)
-        //if (request.ImageFile != null)
-        //{
-        //    // Lógica para salvar o arquivo de imagem e atualizar a URL
-        //    // Exemplo fictício, adaptação necessária para salvar o arquivo na sua estrutura
-        //    var fileName = Path.GetFileName(request.ImageFile.FileName);
-        //    var filePath = Path.Combine("wwwroot", "images", fileName); // Ajuste conforme seu diretório de armazenamento
-        //    using (var stream = new FileStream(filePath, FileMode.Create))
-        //    {
-        //        await request.ImageFile.CopyToAsync(stream);
-        //    }
-        //    post.Image = "/images/" + fileName; // Caminho da imagem
-        //}
-        //else if (!string.IsNullOrEmpty(request.ImageUrl))
-        //{
-        //    post.Image = request.ImageUrl; // Utiliza a URL da imagem enviada
-        //}
+        _logger.LogInformation("Post updated with new Title: {Title}, Slug: {Slug}", post.Title, post.Slug);
 
         string uploadPath = string.Empty;
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            // Se estiver rodando no Windows, use o diretório atual
             uploadPath = Directory.GetCurrentDirectory();
+            _logger.LogInformation("Running on Windows, using upload path: {UploadPath}", uploadPath);
         }
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
-            // Se estiver rodando no Linux, use "/app"
             uploadPath = "/app";
+            _logger.LogInformation("Running on Linux, using upload path: {UploadPath}", uploadPath);
         }
 
-        Directory.CreateDirectory(uploadPath);
+        try
+        {
+            Directory.CreateDirectory(uploadPath);
+            _logger.LogInformation("Created directory at: {UploadPath}", uploadPath);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to create directory at: {UploadPath}", uploadPath);
+            throw;
+        }
+
         var imagePath = await ImageUploader.SaveImageAsync(request.ImageFile, request.ImageUrl, uploadPath);
-        
-        if (imagePath is not null)
+
+        if (imagePath != null)
+        {
             post.Image = imagePath;
-        
+            _logger.LogInformation("Image saved at: {ImagePath}", imagePath);
+        }
+
         var existingCategories = await _db.Categories
             .Where(c => request.Categories.Contains(c.Name) && c.TenancyId == tenancyId)
             .ToListAsync(cancellationToken);
 
         post.PostCategories.Clear();
+        _logger.LogInformation("Cleared existing post categories.");
 
         foreach (var catName in request.Categories)
         {
@@ -92,6 +101,7 @@ public class UpdatePostCommandHandler : IRequestHandler<UpdatePostCommand, PostD
             {
                 category = new Category { Name = catName, TenancyId = tenancyId };
                 _db.Categories.Add(category);
+                _logger.LogInformation("Added new category: {CategoryName}", catName);
             }
 
             post.PostCategories.Add(new PostCategory
@@ -101,7 +111,16 @@ public class UpdatePostCommandHandler : IRequestHandler<UpdatePostCommand, PostD
             });
         }
 
-        await _db.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await _db.SaveChangesAsync(cancellationToken);
+            _logger.LogInformation("Post with ID: {PostId} successfully updated and saved to database.", post.Id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to save updated post with ID: {PostId} to the database.", post.Id);
+            throw;
+        }
 
         return new PostDto
         {
