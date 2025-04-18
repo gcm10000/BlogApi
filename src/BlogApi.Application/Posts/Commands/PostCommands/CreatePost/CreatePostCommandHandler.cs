@@ -41,7 +41,7 @@ public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, PostD
             Slug = uniqueSlug,
             Content = request.Content,
             Excerpt = request.Excerpt,
-            Image = imagePath,
+            Image = imagePath ?? "",
             AuthorId = authorId,
             Status = request.Status,
             Date = DateTime.UtcNow,
