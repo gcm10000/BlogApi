@@ -55,21 +55,22 @@ public class UpdatePostCommandHandler : IRequestHandler<UpdatePostCommand, PostD
 
         _logger.LogInformation("Post updated with new Title: {Title}, Slug: {Slug}", post.Title, post.Slug);
 
-        string uploadPath = string.Empty;
+        //string uploadPath = string.Empty;
+        //    uploadPath = Directory.GetCurrentDirectory();
 
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            uploadPath = Directory.GetCurrentDirectory();
-            _logger.LogInformation("Running on Windows, using upload path: {UploadPath}", uploadPath);
-        }
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        {
-            uploadPath = "/app";
-            _logger.LogInformation("Running on Linux, using upload path: {UploadPath}", uploadPath);
-        }
+        //if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        //{
+        //    _logger.LogInformation("Running on Windows, using upload path: {UploadPath}", uploadPath);
+        //}
+        //else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        //{
+        //    uploadPath = "/app";
+        //    _logger.LogInformation("Running on Linux, using upload path: {UploadPath}", uploadPath);
+        //}
 
         try
         {
+            var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
             Directory.CreateDirectory(uploadPath);
             _logger.LogInformation("Created directory at: {UploadPath}", uploadPath);
         }
