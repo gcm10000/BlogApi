@@ -10,9 +10,13 @@ EXPOSE 8081
 # Criar diretório e dar permissão para o usuário 'app' (UID 1000)
 RUN mkdir -p /app/wwwroot/uploads \
     && chown -R 1000:1000 /app/wwwroot
+        
+RUN chown -R $APP_UID:$APP_UID /app
+USER $APP_UID
+
 
 # Voltar para o usuário padrão 'app' (UID 1000)
-USER app
+#USER app
 
 
 # Usado para build do projeto
