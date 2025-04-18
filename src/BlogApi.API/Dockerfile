@@ -8,7 +8,7 @@ EXPOSE 8080
 EXPOSE 8081
 
 # Criar o diretório de uploads e definir permissões para garantir que o app tenha acesso
-RUN mkdir -p /app/wwwroot/uploads && chmod -R 777 /app/wwwroot/uploads
+RUN mkdir -p /app/wwwroot/uploads && chmod -R 777 /app/wwwroot && chmod -R 777 /app/wwwroot/uploads
 
 # Voltar para o usuário padrão 'app'
 USER app
