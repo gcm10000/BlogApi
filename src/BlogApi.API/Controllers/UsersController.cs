@@ -33,7 +33,7 @@ public class UsersController : ControllerBase
     /// <response code="200">Lista de usuários retornada com sucesso.</response>
     [HttpGet]
     [ProducesResponseType(typeof(PagedResponse<UserDto>), StatusCodes.Status200OK)]
-    [Authorize(Roles = RoleConstants.Administrator)]
+    [Authorize(Roles = RoleConstants.RootAdminAndAdministrator)]
     public async Task<IActionResult> GetUsers([FromQuery] GetUsersQuery query)
     {
         var result = await _mediator.Send(query);
@@ -48,7 +48,7 @@ public class UsersController : ControllerBase
     /// <response code="200">Usuário encontrado e retornado com sucesso.</response>
     /// <response code="404">Usuário não encontrado.</response>
     [HttpGet("{id}")]
-    [Authorize(Roles = RoleConstants.Administrator)]
+    [Authorize(Roles = RoleConstants.RootAdminAndAdministrator)]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetUserById(int id)
@@ -63,12 +63,13 @@ public class UsersController : ControllerBase
     /// <summary>
     /// Cria um novo usuário.
     /// </summary>
+    /// <param name="tenancyId"></param>
     /// <param name="command">Comando contendo os dados do novo usuário a ser criado.</param>
     /// <returns>O usuário recém-criado.</returns>
     /// <response code="201">Usuário criado com sucesso.</response>
     /// <response code="400">Dados inválidos fornecidos para criar o usuário.</response>
     [HttpPost]
-    [Authorize(Roles = RoleConstants.Administrator)]
+    [Authorize(Roles = RoleConstants.RootAdminAndAdministrator)]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateUser([FromRoute] int tenancyId, [FromBody] CreateUserCommand command)
@@ -87,7 +88,7 @@ public class UsersController : ControllerBase
     /// <response code="400">Dados inválidos fornecidos para atualizar o usuário.</response>
     /// <response code="404">Usuário não encontrado.</response>
     [HttpPut("{id}")]
-    [Authorize(Roles = RoleConstants.Administrator)]
+    [Authorize(Roles = RoleConstants.RootAdminAndAdministrator)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateUser(int id, [FromBody] UpdateUserCommand command)
@@ -109,7 +110,7 @@ public class UsersController : ControllerBase
     /// <response code="204">Usuário excluído com sucesso.</response>
     /// <response code="404">Usuário não encontrado.</response>
     [HttpDelete("{id}")]
-    [Authorize(Roles = RoleConstants.Administrator)]
+    [Authorize(Roles = RoleConstants.RootAdminAndAdministrator)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteUser(int id)

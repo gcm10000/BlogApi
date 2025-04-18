@@ -20,7 +20,7 @@ public class DashboardController : ControllerBase
     }
 
     [HttpGet("stats")]
-    [Authorize(Roles = RoleConstants.AdministratorAndAuthor)]
+    [Authorize(Roles = RoleConstants.RootAdminAndAdministratorAndAuthor)]
     public async Task<IActionResult> GetStats()
     {
         var result = await _mediator.Send(new GetDashboardStatsQuery());
@@ -28,7 +28,7 @@ public class DashboardController : ControllerBase
     }
 
     [HttpGet("recent")]
-    [Authorize(Roles = RoleConstants.AdministratorAndAuthor)]
+    [Authorize(Roles = RoleConstants.RootAdminAndAdministratorAndAuthor)]
     public async Task<IActionResult> GetRecent()
     {
         var result = await _mediator.Send(new GetDashboardRecentQuery());

@@ -18,6 +18,7 @@ public class RoleSeeder
     {
         await EnsureRoleExists("Administrator");
         await EnsureRoleExists("Author");
+        await EnsureRoleExists("RootAdmin");
     }
 
     private async Task EnsureRoleExists(string roleName)

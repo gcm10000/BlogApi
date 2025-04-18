@@ -6,6 +6,6 @@ namespace BlogApi.Application.Tenancies.Commands.CreateTenancy;
 public class CreateTenancyCommand : IRequest<TenancyDto>
 {
     public string Name { get; set; }
-    public string Email { get; set; }
+    public string AdministratorEmail { get; set; }
     public string Url { get; set; }
 }

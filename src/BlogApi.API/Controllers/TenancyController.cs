@@ -28,7 +28,7 @@ public class TenancyController : ControllerBase
     // Produz uma resposta 201 (Created) com os detalhes do inquilino recém-criado.
     // Responde com 400 (Bad Request) caso os dados do inquilino sejam inválidos.
     [HttpPost]
-    [Authorize(Roles = RoleConstants.Administrator)]
+    [Authorize(Roles = RoleConstants.RootAdmin)]
     [ProducesResponseType(typeof(TenancyDto), StatusCodes.Status201Created)] // Retorna TenancyDto com 201 Created
     [ProducesResponseType(StatusCodes.Status400BadRequest)] // Retorna 400 se os dados forem inválidos
     public async Task<IActionResult> CreateTenancy([FromBody] CreateTenancyCommand command)
@@ -41,7 +41,7 @@ public class TenancyController : ControllerBase
     // Permite que um administrador recupere a lista de todos os inquilinos.
     // Produz uma resposta 200 (OK) com a lista paginada de inquilinos.
     [HttpGet]
-    [Authorize(Roles = RoleConstants.Administrator)]
+    [Authorize(Roles = RoleConstants.RootAdmin)]
     [ProducesResponseType(typeof(PagedResponse<TenancyDto>), StatusCodes.Status200OK)] // Retorna a lista paginada de TenancyDto
     public async Task<IActionResult> GetTenancies()
     {
@@ -54,7 +54,7 @@ public class TenancyController : ControllerBase
     // Produz uma resposta 200 (OK) com o inquilino encontrado.
     // Responde com 404 (Not Found) se o inquilino não for encontrado.
     [HttpGet("{id}")]
-    [Authorize(Roles = RoleConstants.Administrator)]
+    [Authorize(Roles = RoleConstants.RootAdmin)]
     [ProducesResponseType(typeof(TenancyDto), StatusCodes.Status200OK)] // Retorna TenancyDto com 200 OK
     [ProducesResponseType(StatusCodes.Status404NotFound)] // Retorna 404 se o inquilino não for encontrado
     public async Task<IActionResult> GetTenancyById(int id)
@@ -70,7 +70,7 @@ public class TenancyController : ControllerBase
     // Produz uma resposta 200 (OK) com os detalhes atualizados do inquilino.
     // Responde com 400 (Bad Request) se os dados forem inválidos.
     [HttpPut("{id}")]
-    [Authorize(Roles = RoleConstants.Administrator)]
+    [Authorize(Roles = RoleConstants.RootAdmin)]
     [ProducesResponseType(typeof(TenancyDto), StatusCodes.Status200OK)] // Retorna TenancyDto com 200 OK
     [ProducesResponseType(StatusCodes.Status400BadRequest)] // Retorna 400 se os dados forem inválidos
     public async Task<IActionResult> UpdateTenancy(int id, [FromBody] UpdateTenancyCommand command)
@@ -85,7 +85,7 @@ public class TenancyController : ControllerBase
     // Produz uma resposta 200 (OK) com uma mensagem de sucesso.
     // Responde com 404 (Not Found) se o inquilino não for encontrado.
     [HttpDelete("{id}")]
-    [Authorize(Roles = RoleConstants.Administrator)]
+    [Authorize(Roles = RoleConstants.RootAdmin)]
     [ProducesResponseType(StatusCodes.Status200OK)] // Retorna 200 OK com a mensagem de sucesso
     [ProducesResponseType(StatusCodes.Status404NotFound)] // Retorna 404 se o inquilino não for encontrado
     public async Task<IActionResult> DeleteTenancy(int id)

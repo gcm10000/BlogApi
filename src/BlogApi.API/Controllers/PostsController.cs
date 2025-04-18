@@ -143,7 +143,7 @@ public class PostsController : ControllerBase
     /// Cria um novo post.
     /// </summary>
     [HttpPost]
-    [Authorize(Roles = RoleConstants.AdministratorAndAuthor)]
+    [Authorize(Roles = RoleConstants.RootAdminAndAdministratorAndAuthor)]
     [ProducesResponseType(typeof(PostDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Consumes("multipart/form-data")]
@@ -157,7 +157,7 @@ public class PostsController : ControllerBase
     /// Atualiza um post existente.
     /// </summary>
     [HttpPut("{id}")]
-    [Authorize(Roles = RoleConstants.AdministratorAndAuthor)]
+    [Authorize(Roles = RoleConstants.RootAdminAndAdministratorAndAuthor)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -182,7 +182,7 @@ public class PostsController : ControllerBase
     /// <response code="204">Post excluído com sucesso.</response>
     /// <response code="404">Post não encontrado.</response>
     [HttpDelete("{id}")]
-    [Authorize(Roles = RoleConstants.AdministratorAndAuthor)]
+    [Authorize(Roles = RoleConstants.RootAdminAndAdministratorAndAuthor)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeletePost(int id)
@@ -204,7 +204,7 @@ public class PostsController : ControllerBase
     /// <response code="200">Status do post atualizado com sucesso.</response>
     /// <response code="404">Post não encontrado.</response>
     [HttpPatch("{id}/status")]
-    [Authorize(Roles = RoleConstants.AdministratorAndAuthor)]
+    [Authorize(Roles = RoleConstants.RootAdminAndAdministratorAndAuthor)]
     [ProducesResponseType(typeof(PostDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdatePostStatus(int id, [FromBody] UpdatePostStatusCommand command)

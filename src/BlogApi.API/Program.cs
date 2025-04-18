@@ -98,54 +98,31 @@ app.MapControllers();
 //}
 
 
-//using (var scope = app.Services.CreateScope())
-//{
-//    var roleSeeder = scope.ServiceProvider.GetRequiredService<RoleSeeder>();
-//    await roleSeeder.SeedAsync();
-
-//    // Caminho do arquivo marker
-//    var rolemarkerFilePath = Path.Combine("/app/migrations", "role_seeder_marker.txt");
-
-//    //// Verifica se o marker já foi criado
-//    //if (!File.Exists(rolemarkerFilePath))
-//    //{
-//    //    // Cria o arquivo marker indicando que o processo foi concluído
-//    //    File.WriteAllText(rolemarkerFilePath, "RoleSeeder process completed.");
-//    //}
-//    //else
-//    //{
-//    //    // Caso já tenha sido criado, apenas loga a informação
-//    //    Console.WriteLine("RoleSeeder marker already exists. Process already completed.");
-//    //}
-//}
+using (var scope = app.Services.CreateScope())
+{
+    var roleSeeder = scope.ServiceProvider.GetRequiredService<RoleSeeder>();
+    await roleSeeder.SeedAsync();
+}
 
 
-//// Código original
-//var mediator1 = app.Services.CreateScope().ServiceProvider.GetRequiredService<IMediator>();
+// Código original
+var blogDbContext = app.Services.CreateScope().ServiceProvider.GetRequiredService<BlogDbContext>();
 
-//var tenancy = new CreateTenancyCommand
-//{
-//    Name = "Ozos",
-//    Email = "contato@ozos.com.br",
-//    Url = "ozos.com.br"
-//};
+var anyTenancy = await blogDbContext.Tenancies.AnyAsync(x => x.Name == "Ozos");
+if (!anyTenancy)
+{
+    var mediator1 = app.Services.CreateScope().ServiceProvider.GetRequiredService<IMediator>();
 
-//var tenancyResult = await mediator1.Send(tenancy);
+    var tenancy = new CreateTenancyCommand
+    {
+        Name = "Ozos",
+        AdministratorEmail = "contato@ozos.com.br",
+        Url = "ozos.com.br"
+    };
 
-//// Caminho do arquivo marker
-//var tenancyMarkerFilePath = Path.Combine("/app/migrations", "tenancy_marker.txt");
+    var tenancyResult = await mediator1.Send(tenancy);
+}
 
-//// Verifica se o marker já foi criado
-//if (!File.Exists(tenancyMarkerFilePath))
-//{
-//    // Cria o arquivo marker indicando que o processo foi concluído
-//    File.WriteAllText(tenancyMarkerFilePath, "Tenancy process completed.");
-//}
-//else
-//{
-//    // Caso já tenha sido criado, apenas loga a informação
-//    Console.WriteLine("Tenancy marker already exists. Process already completed.");
-//}
 
 
 

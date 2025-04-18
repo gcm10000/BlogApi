@@ -71,7 +71,7 @@ public class AuthController : ControllerBase
     /// <response code="200">Senha alterada com sucesso.</response>
     /// <response code="401">Usuário não autorizado a alterar a senha.</response>
     [HttpPost("change-password")]
-    [Authorize(Roles = RoleConstants.AdministratorAndAuthor)]
+    [Authorize(Roles = RoleConstants.RootAdminAndAdministratorAndAuthor)]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command)
     {
         var result = await _mediator.Send(command);
@@ -79,7 +79,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpGet("me")]
-    [Authorize(Roles = RoleConstants.AdministratorAndAuthor)]
+    [Authorize(Roles = RoleConstants.RootAdminAndAdministratorAndAuthor)]
     public IActionResult Me()
     {
         var claims = _currentUserService.GetClaims();

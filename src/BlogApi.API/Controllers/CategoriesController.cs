@@ -29,7 +29,7 @@ public class CategoriesController : ControllerBase
     /// <returns>Lista de nomes das categorias.</returns>
     /// <response code="200">Categorias listadas com sucesso.</response>
     [HttpGet]
-    [Authorize(Roles = RoleConstants.AdministratorAndAuthor)]
+    [Authorize(Roles = RoleConstants.RootAdminAndAdministratorAndAuthor)]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetCategories()
     {
@@ -45,7 +45,7 @@ public class CategoriesController : ControllerBase
     /// <response code="200">Categoria adicionada com sucesso.</response>
     /// <response code="400">Dados inválidos ou categoria já existente.</response>
     [HttpPost]
-    [Authorize(Roles = RoleConstants.AdministratorAndAuthor)]
+    [Authorize(Roles = RoleConstants.RootAdminAndAdministratorAndAuthor)]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> AddCategory([FromBody] AddCategoryCommand command)
@@ -62,7 +62,7 @@ public class CategoriesController : ControllerBase
     /// <response code="200">Categoria excluída com sucesso.</response>
     /// <response code="404">Categoria não encontrada.</response>
     [HttpDelete("{name}")]
-    [Authorize(Roles = RoleConstants.AdministratorAndAuthor)]
+    [Authorize(Roles = RoleConstants.RootAdminAndAdministratorAndAuthor)]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteCategory(string name)

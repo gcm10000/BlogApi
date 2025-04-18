@@ -27,7 +27,10 @@ public class CreateTenancyCommandHandler : IRequestHandler<CreateTenancyCommand,
 
     private const string DefaultPassword = "MeuBlog@123456";
 
-    public CreateTenancyCommandHandler(UserManager<ApplicationUser> userManager, BlogDbContext context, IdentityDbContext identityContext)
+    public CreateTenancyCommandHandler(
+        UserManager<ApplicationUser> userManager, 
+        BlogDbContext context, 
+        IdentityDbContext identityContext)
     {
         _userManager = userManager;
         _context = context;
@@ -80,9 +83,9 @@ public class CreateTenancyCommandHandler : IRequestHandler<CreateTenancyCommand,
             {
                 PasswordChangeRequired = true,
                 Name = request.Name,
-                Role = RoleConstants.Administrator,
-                UserName = request.Email,
-                Email = request.Email,
+                Role = RoleConstants.RootAdmin,
+                UserName = request.AdministratorEmail,
+                Email = request.AdministratorEmail,
                 AuthorId = author.Id,
                 TenancyDomainId = tenancy.Id,
                 IsProtected = true,
@@ -97,7 +100,7 @@ public class CreateTenancyCommandHandler : IRequestHandler<CreateTenancyCommand,
             }
 
             // Adiciona a role
-            var roleResult = await _userManager.AddToRoleAsync(user, RoleConstants.Administrator);
+            var roleResult = await _userManager.AddToRoleAsync(user, RoleConstants.RootAdmin);
             if (!roleResult.Succeeded)
             {
                 throw new Exception("Erro ao adicionar role: " + string.Join(", ", roleResult.Errors.Select(e => e.Description)));
@@ -114,9 +117,10 @@ public class CreateTenancyCommandHandler : IRequestHandler<CreateTenancyCommand,
                 Id = tenancy.Id,
                 Url = tenancy.Url,
                 Name = tenancy.Name,
+                MainAdministratorEmail = user.Email,
                 CreatedAt = tenancy.CreatedAt,
                 UpdatedAt = tenancy.UpdatedAt,
-                Email = request.Email,
+                Email = request.AdministratorEmail,
                 Password = DefaultPassword
             };
         }

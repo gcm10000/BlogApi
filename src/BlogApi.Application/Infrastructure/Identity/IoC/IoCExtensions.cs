@@ -110,6 +110,9 @@ public static class IoCExtensions
 
             options.AddPolicy(RoleConstants.AdministratorAndAuthor, policy =>
                 policy.RequireRole(RoleConstants.AdministratorAndAuthor));
+
+            options.AddPolicy(RoleConstants.RootAdminAndAdministratorAndAuthor, policy =>
+                policy.RequireRole(RoleConstants.RootAdminAndAdministratorAndAuthor));
         });
 
         return services;
