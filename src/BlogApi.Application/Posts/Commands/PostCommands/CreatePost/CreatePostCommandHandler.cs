@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using BlogApi.Application.Interfaces;
 using BlogApi.Application.Helpers;
 using BlogApi.Application.Infrastructure;
+using System.Runtime.InteropServices;
 
 namespace BlogApi.Application.Posts.Commands.PostCommands.CreatePost;
 
@@ -30,7 +31,21 @@ public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, PostD
         var baseSlug = SlugHelper.GenerateSlug(request.Title);
         var uniqueSlug = await GenerateUniqueSlugAsync(baseSlug, tenancyId, cancellationToken);
 
-        var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+        //var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+
+        string uploadPath = string.Empty;
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            // Se estiver rodando no Windows, use o diretório atual
+            uploadPath = Directory.GetCurrentDirectory();
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            // Se estiver rodando no Linux, use "/app"
+            uploadPath = "/app";
+        }
+
         Directory.CreateDirectory(uploadPath);
 
         var imagePath = await ImageUploader.SaveImageAsync(request.ImageFile, request.ImageUrl, uploadPath);

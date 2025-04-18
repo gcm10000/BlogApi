@@ -7,6 +7,7 @@ using BlogApi.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using BlogApi.Application.Infrastructure;
+using System.Runtime.InteropServices;
 
 namespace BlogApi.Application.Posts.Commands.PostCommands.UpdatePost;
 
@@ -59,7 +60,19 @@ public class UpdatePostCommandHandler : IRequestHandler<UpdatePostCommand, PostD
         //    post.Image = request.ImageUrl; // Utiliza a URL da imagem enviada
         //}
 
-        var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+        string uploadPath = string.Empty;
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            // Se estiver rodando no Windows, use o diretório atual
+            uploadPath = Directory.GetCurrentDirectory();
+        }
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        {
+            // Se estiver rodando no Linux, use "/app"
+            uploadPath = "/app";
+        }
+
         Directory.CreateDirectory(uploadPath);
         var imagePath = await ImageUploader.SaveImageAsync(request.ImageFile, request.ImageUrl, uploadPath);
         
