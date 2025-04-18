@@ -8,6 +8,7 @@ using BlogApi.Application.Interfaces;
 using BlogApi.Application.Helpers;
 using BlogApi.Application.Infrastructure;
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.Logging;
 
 namespace BlogApi.Application.Posts.Commands.PostCommands.CreatePost;
 
@@ -15,40 +16,55 @@ public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, PostD
 {
     private readonly BlogDbContext _context;
     private readonly ICurrentUserService _currentUserService;
+    private readonly ILogger<CreatePostCommandHandler> _logger;
 
-    public CreatePostCommandHandler(BlogDbContext context, ICurrentUserService currentUserService)
+    public CreatePostCommandHandler(BlogDbContext context, ICurrentUserService currentUserService, ILogger<CreatePostCommandHandler> logger)
     {
         _context = context;
         _currentUserService = currentUserService;
+        _logger = logger;
     }
-
 
     public async Task<PostDto> Handle(CreatePostCommand request, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Starting to handle CreatePostCommand...");
+
         var tenancyId = _currentUserService.GetCurrentTenancy();
         var authorId = _currentUserService.GetCurrentAuthorId();
+
+        _logger.LogInformation("Fetched tenancyId: {TenancyId}, authorId: {AuthorId}", tenancyId, authorId);
 
         var baseSlug = SlugHelper.GenerateSlug(request.Title);
         var uniqueSlug = await GenerateUniqueSlugAsync(baseSlug, tenancyId, cancellationToken);
 
-        //var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+        _logger.LogInformation("Generated unique slug: {Slug}", uniqueSlug);
 
         string uploadPath = string.Empty;
 
         if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            // Se estiver rodando no Windows, use o diretório atual
             uploadPath = Directory.GetCurrentDirectory();
+            _logger.LogInformation("Running on Windows, upload path: {UploadPath}", uploadPath);
         }
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
         {
-            // Se estiver rodando no Linux, use "/app"
             uploadPath = "/app";
+            _logger.LogInformation("Running on Linux, upload path: {UploadPath}", uploadPath);
         }
 
-        Directory.CreateDirectory(uploadPath);
+        try
+        {
+            Directory.CreateDirectory(uploadPath);
+            _logger.LogInformation("Created upload directory at: {UploadPath}", uploadPath);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to create upload directory at: {UploadPath}", uploadPath);
+            throw;
+        }
 
         var imagePath = await ImageUploader.SaveImageAsync(request.ImageFile, request.ImageUrl, uploadPath);
+        _logger.LogInformation("Image saved at: {ImagePath}", imagePath ?? "No image");
 
         var post = new Post
         {
@@ -65,6 +81,8 @@ public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, PostD
             TenancyId = tenancyId
         };
 
+        _logger.LogInformation("Created new Post entity with title: {Title}", post.Title);
+
         var existingCategories = await _context.Categories
             .Include(x => x.Tenancy)
             .Where(x => x.Tenancy.DeletedAt == null)
@@ -79,6 +97,7 @@ public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, PostD
             {
                 category = new Category { Name = catName, TenancyId = tenancyId };
                 _context.Categories.Add(category);
+                _logger.LogInformation("Added new category: {CategoryName}", catName);
             }
 
             post.PostCategories.Add(new PostCategory
@@ -88,8 +107,17 @@ public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, PostD
             });
         }
 
-        _context.Posts.Add(post);
-        await _context.SaveChangesAsync(cancellationToken);
+        try
+        {
+            _context.Posts.Add(post);
+            await _context.SaveChangesAsync(cancellationToken);
+            _logger.LogInformation("Post saved to database with ID: {PostId}", post.Id);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to save post to database.");
+            throw;
+        }
 
         return new PostDto
         {
@@ -110,6 +138,8 @@ public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, PostD
 
     private async Task<string> GenerateUniqueSlugAsync(string baseSlug, int tenancyId, CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Generating unique slug for base slug: {BaseSlug}", baseSlug);
+
         var slug = baseSlug;
         int counter = 1;
 
@@ -119,9 +149,10 @@ public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, PostD
         {
             slug = $"{baseSlug}-{counter}";
             counter++;
+            _logger.LogInformation("Slug {Slug} already exists, trying next with counter: {Counter}", slug, counter);
         }
 
+        _logger.LogInformation("Generated unique slug: {Slug}", slug);
         return slug;
     }
-
 }
