@@ -2,20 +2,15 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 
 # Usar root para configurar permissões
-USER root
+USER root 
 WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-# Criar diretório e dar permissão para o usuário 'app' (UID 1000)
-RUN mkdir -p /app/wwwroot/uploads \
-    && chown -R 1000:1000 /app/wwwroot
-        
-RUN chown -R $APP_UID:$APP_UID /app
-USER $APP_UID
+# Criar o diretório de uploads e definir permissões para garantir que o app tenha acesso
+RUN mkdir -p /app/wwwroot/uploads && chmod -R 777 /app/wwwroot && chmod -R 777 /app/wwwroot/uploads
 
-
-# Voltar para o usuário padrão 'app' (UID 1000)
+## Voltar para o usuário padrão 'app'
 #USER app
 
 
