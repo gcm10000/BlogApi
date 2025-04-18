@@ -35,7 +35,7 @@ public static class ImageUploader
                 logger.LogInformation("Saving image to: {FullPath}", fullPath);
 
                 // Salva o arquivo no sistema de arquivos
-                using (var stream = new FileStream(fullPath, FileMode.Create))
+                using (var stream = new FileStream(fullPath, FileMode.CreateNew))
                 {
                     await imageFile.CopyToAsync(stream);
                 }
