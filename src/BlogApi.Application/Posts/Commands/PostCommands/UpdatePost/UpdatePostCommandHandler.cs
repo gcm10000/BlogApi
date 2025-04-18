@@ -6,9 +6,6 @@ using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Threading;
 using BlogApi.Application.Infrastructure;
 
 namespace BlogApi.Application.Posts.Commands.PostCommands.UpdatePost;
@@ -65,8 +62,10 @@ public class UpdatePostCommandHandler : IRequestHandler<UpdatePostCommand, PostD
         var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
         Directory.CreateDirectory(uploadPath);
         var imagePath = await ImageUploader.SaveImageAsync(request.ImageFile, request.ImageUrl, uploadPath);
-
-        post.Image = imagePath ?? "";
+        
+        if (imagePath is not null)
+            post.Image = imagePath;
+        
         var existingCategories = await _db.Categories
             .Where(c => request.Categories.Contains(c.Name) && c.TenancyId == tenancyId)
             .ToListAsync(cancellationToken);

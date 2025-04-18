@@ -8,4 +8,6 @@ public class ApiKey
     public bool IsActive { get; set; } = true;
 
     public int TenancyDomainId { get; set; }
+
+    public List<ApiKeyScope> ApiKeyScopes { get; set; } = new();
 }
