@@ -68,9 +68,9 @@ public class UpdatePostCommandHandler : IRequestHandler<UpdatePostCommand, PostD
         //    _logger.LogInformation("Running on Linux, using upload path: {UploadPath}", uploadPath);
         //}
 
+        var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
         try
         {
-            var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
             Directory.CreateDirectory(uploadPath);
             _logger.LogInformation("Created directory at: {UploadPath}", uploadPath);
         }
