@@ -1,7 +1,7 @@
 ﻿using BlogApi.Application.Auth.Dto;
 using BlogApi.Application.Infrastructure.Data;
+using BlogApi.Application.Infrastructure.Identity.Models;
 using BlogApi.Application.Interfaces;
-using BlogApi.Infrastructure.Identity.Models;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -51,7 +51,7 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, UserD
                 return null;
             }
 
-            var tenancyId = _currentUserService.GetCurrentTenancy();
+            var tenancyId = _currentUserService.GetCurrentTenancyDomainId();
 
             // Atualiza dados do Author
             var author = await _context.Authors
@@ -75,7 +75,10 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, UserD
             {
                 Id = user.AuthorId,
                 Name = user.Name,
+                IsMainTenancy = user.IsMainTenancy,
                 Email = user.Email,
+                TenancyDomainId = user.TenancyDomainId,
+                TenancyDomainName = user.TenancyDomainName,
                 Role = user.Role,
                 CreatedAt = user.CreatedAt,
                 UpdatedAt = user.UpdatedAt

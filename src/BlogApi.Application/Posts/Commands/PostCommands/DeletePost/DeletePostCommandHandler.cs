@@ -18,7 +18,7 @@ public class DeletePostCommandHandler : IRequestHandler<DeletePostCommand, bool>
 
     public async Task<bool> Handle(DeletePostCommand request, CancellationToken cancellationToken)
     {
-        var tenancyId = _currentUserService.GetCurrentTenancy();
+        var tenancyId = _currentUserService.GetCurrentTenancyDomainId();
 
         var post = await _db.Posts
             .Include(x => x.Tenancy)

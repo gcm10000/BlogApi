@@ -1,9 +1,9 @@
 ﻿using BlogApi.Application.Auth.Dto;
 using BlogApi.Application.Constants;
 using BlogApi.Application.Infrastructure.Identity.Configurations;
+using BlogApi.Application.Infrastructure.Identity.Models;
 using BlogApi.Application.Interfaces;
 using BlogApi.Application.Migrations.IdentityDb;
-using BlogApi.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -52,6 +52,9 @@ public class AuthService : IAuthService
             {
                 Id = user.AuthorId,
                 Name = user.Name,
+                IsMainTenancy = user.IsMainTenancy,
+                TenancyDomainId = user.TenancyDomainId,
+                TenancyDomainName = user.TenancyDomainName,
                 Email = user.Email,
                 Role = user.Role
             },
@@ -105,8 +108,10 @@ public class AuthService : IAuthService
 
         claims.Add(new Claim(ClaimTypes.NameIdentifier, user.Id));
         claims.Add(new Claim(CustomClaimTypes.TenancyDomainId, user.TenancyDomainId.ToString()));
+        claims.Add(new Claim(CustomClaimTypes.IsMainTenancy, user.IsMainTenancy.ToString()));
         claims.Add(new Claim(CustomClaimTypes.AuthorId, user.AuthorId.ToString()));
         claims.Add(new Claim(CustomClaimTypes.PasswordChangeRequired, user.PasswordChangeRequired.ToString()));
+        claims.Add(new Claim(CustomClaimTypes.TenancyDomainName, user.TenancyDomainName.ToString()));
 
         if (user.Name is not null)
             claims.Add(new Claim(CustomClaimTypes.Name, user.Name));

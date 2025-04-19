@@ -1,6 +1,6 @@
 ﻿using BlogApi.Application.Exceptions;
 using BlogApi.Application.Infrastructure.Data;
-using BlogApi.Infrastructure.Identity.Models;
+using BlogApi.Application.Infrastructure.Identity.Models;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

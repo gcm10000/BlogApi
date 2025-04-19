@@ -1,7 +1,7 @@
 ﻿using BlogApi.Application.Infrastructure.Data;
+using BlogApi.Application.Infrastructure.Identity.Data;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Entities;
-using BlogApi.Infrastructure.Identity.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,7 +25,7 @@ public class GetDashboardRecentQueryHandler : IRequestHandler<GetDashboardRecent
 
     public async Task<DashboardRecentDto> Handle(GetDashboardRecentQuery request, CancellationToken cancellationToken)
     {
-        var tenancyId = _currentUserService.GetCurrentTenancy();
+        var tenancyId = _currentUserService.GetCurrentTenancyDomainId();
 
         var posts = await _context.Posts
             .Where(x => x.Tenancy.DeletedAt == null)

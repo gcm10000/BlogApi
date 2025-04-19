@@ -1,7 +1,7 @@
 ﻿using BlogApi.Application.Common;
 using BlogApi.Application.Infrastructure.Data;
+using BlogApi.Application.Infrastructure.Identity.Data;
 using BlogApi.Application.Tenancies.Dtos;
-using BlogApi.Infrastructure.Identity.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

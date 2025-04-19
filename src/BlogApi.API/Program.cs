@@ -1,22 +1,32 @@
+using BlogApi.API.Controllers;
+using BlogApi.API.DataSeeders;
+using BlogApi.API.Filters;
 using BlogApi.API.IoC;
 using BlogApi.API.Middlewares;
-using BlogApi.Application.Auth.Commands.ChangePassword;
 using BlogApi.Application.Infrastructure.Data;
 using BlogApi.Application.Infrastructure.Data.IoC;
+using BlogApi.Application.Infrastructure.Identity.Data;
 using BlogApi.Application.Infrastructure.Identity.DataSeeders;
+using BlogApi.Application.Infrastructure.Identity.IoC;
 using BlogApi.Application.IoC;
 using BlogApi.Application.Tenancies.Commands.CreateTenancy;
-using BlogApi.Infrastructure.Identity.Data;
-using BlogApi.Infrastructure.Identity.IoC;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder.Services.AddScoped<TenancyAccessFilter>();
 
-builder.Services.AddControllers();
+// Add services to the container.
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<TenancyAccessFilter>();
+});
+builder.Services.AddMemoryCache();
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -44,6 +54,8 @@ Console.WriteLine($"ENVIRONMENT_VARIABLE_FRONT_END_URL: {ENVIRONMENT_VARIABLE_FR
 
 app.UseStaticFiles();
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 app.UseMiddleware<RequestLoggingMiddleware>();
 
 // Configure the HTTP request pipeline.
@@ -62,6 +74,8 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseRouting();
+
+app.UseMiddleware<ApiKeyAuthorizationMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -116,11 +130,22 @@ if (!anyTenancy)
     var tenancy = new CreateTenancyCommand
     {
         Name = "Ozos",
-        AdministratorEmail = "contato@ozos.com.br",
+        MainAdministratorEmail = "contato@ozos.com.br",
         Url = "ozos.com.br"
     };
 
     var tenancyResult = await mediator1.Send(tenancy);
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+
+    var seeder = new ApiScopeSeeder(dbContext);
+    await seeder.SeedAsync(new[] 
+    { 
+        typeof(PostsController).Assembly 
+    });
 }
 
 

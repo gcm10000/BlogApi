@@ -1,40 +1,42 @@
-﻿using BlogApi.Application.Constants;
+﻿using BlogApi.Application.ApiKeys.Commands.GenerateApiKey;
+using BlogApi.Application.Constants;
+using BlogApi.Application.Exceptions;
 using BlogApi.Application.Infrastructure.Data;
+using BlogApi.Application.Infrastructure.Identity.Data;
+using BlogApi.Application.Infrastructure.Identity.Models;
+using BlogApi.Application.Infrastructure.Identity.Services;
 using BlogApi.Application.Tenancies.Dtos;
 using BlogApi.Domain.Entities;
-using BlogApi.Infrastructure.Identity.Data;
-using BlogApi.Infrastructure.Identity.Models;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BlogApi.Application.Tenancies.Commands.CreateTenancy;
-/*
- 
- 
- {
-  "name": "Serralheria GJM",
-  "email": "serralheriagjm@gmail.com",
-  "url": "http://www.serralheriagjm.com.br/"
-}
- 
- */
+
 public class CreateTenancyCommandHandler : IRequestHandler<CreateTenancyCommand, TenancyDto>
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly BlogDbContext _context;
     private readonly IdentityDbContext _identityContext;
+    private readonly IMediator _mediator;
+    private readonly CreateApiKeyService _createApiKeyService;
+
 
     private const string DefaultPassword = "MeuBlog@123456";
 
     public CreateTenancyCommandHandler(
-        UserManager<ApplicationUser> userManager, 
-        BlogDbContext context, 
-        IdentityDbContext identityContext)
+        UserManager<ApplicationUser> userManager,
+        BlogDbContext context,
+        IdentityDbContext identityContext,
+        IMediator mediator,
+        CreateApiKeyService createApiKeyService)
     {
         _userManager = userManager;
         _context = context;
         _identityContext = identityContext;
+        _mediator = mediator;
+        _createApiKeyService = createApiKeyService;
     }
 
     public async Task<TenancyDto> Handle(CreateTenancyCommand request, CancellationToken cancellationToken)
@@ -47,6 +49,7 @@ public class CreateTenancyCommandHandler : IRequestHandler<CreateTenancyCommand,
         if (existingTenancy != null)
             throw new InvalidOperationException($"Tenancy with name {request.Name} already exists.");
 
+        var isTenancyTableEmpty = !_context.Tenancies.Any();
 
         await using var transactionBlogDb = await _context.Database.BeginTransactionAsync(cancellationToken);
         await using var transactionIdentityDb = await _identityContext.Database.BeginTransactionAsync(cancellationToken);
@@ -59,13 +62,13 @@ public class CreateTenancyCommandHandler : IRequestHandler<CreateTenancyCommand,
                 Name = request.Name,
                 Url = request.Url,
                 CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                UpdatedAt = DateTime.UtcNow,
+                IsMainTenancy = isTenancyTableEmpty
             };
 
             // Adicionar a tenancy ao contexto e salvar
             _context.Tenancies.Add(tenancy);
             await _context.SaveChangesAsync(cancellationToken);
-
 
             // Cria o Author
             var author = new Author
@@ -82,10 +85,12 @@ public class CreateTenancyCommandHandler : IRequestHandler<CreateTenancyCommand,
             var user = new ApplicationUser
             {
                 PasswordChangeRequired = true,
+                IsMainTenancy = isTenancyTableEmpty,
+                TenancyDomainName = request.Name,
                 Name = request.Name,
-                Role = RoleConstants.RootAdmin,
-                UserName = request.AdministratorEmail,
-                Email = request.AdministratorEmail,
+                Role = isTenancyTableEmpty ? RoleConstants.RootAdmin : RoleConstants.Administrator,
+                UserName = request.MainAdministratorEmail,
+                Email = request.MainAdministratorEmail,
                 AuthorId = author.Id,
                 TenancyDomainId = tenancy.Id,
                 IsProtected = true,
@@ -96,14 +101,24 @@ public class CreateTenancyCommandHandler : IRequestHandler<CreateTenancyCommand,
             var result = await _userManager.CreateAsync(user, DefaultPassword);
             if (!result.Succeeded)
             {
-                throw new Exception("Erro ao criar usuário: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+                throw new BusinessRuleException("Erro ao criar usuário: " + string.Join(", ", result.Errors.Select(e => e.Description)));
             }
+
+            var generateApiKeyCommandResult = await _createApiKeyService.GenerateApiKeyAsync
+            (
+                name: "Default ApiKey", 
+                scopes: ["post:getposts", "post:getpostbyslug"],
+                tenancyDomainId: tenancy.Id,
+                isProtected: true,
+                cancellationToken
+            );
+            
 
             // Adiciona a role
             var roleResult = await _userManager.AddToRoleAsync(user, RoleConstants.RootAdmin);
             if (!roleResult.Succeeded)
             {
-                throw new Exception("Erro ao adicionar role: " + string.Join(", ", roleResult.Errors.Select(e => e.Description)));
+                throw new BusinessRuleException("Erro ao adicionar role: " + string.Join(", ", roleResult.Errors.Select(e => e.Description)));
             }
 
             // Commit em ambas as transações
@@ -120,8 +135,10 @@ public class CreateTenancyCommandHandler : IRequestHandler<CreateTenancyCommand,
                 MainAdministratorEmail = user.Email,
                 CreatedAt = tenancy.CreatedAt,
                 UpdatedAt = tenancy.UpdatedAt,
-                Email = request.AdministratorEmail,
-                Password = DefaultPassword
+                Email = request.MainAdministratorEmail,
+                Password = DefaultPassword,
+                ApiKeyDefaultName = generateApiKeyCommandResult.Name,
+                ApiKeyDefaultKey = generateApiKeyCommandResult.Key
             };
         }
         catch

@@ -1,8 +1,8 @@
 ﻿using BlogApi.Application.Constants;
 using BlogApi.Application.Exceptions;
 using BlogApi.Application.Infrastructure.Data;
+using BlogApi.Application.Infrastructure.Identity.Data;
 using BlogApi.Application.Tenancies.Dtos;
-using BlogApi.Infrastructure.Identity.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Policy;

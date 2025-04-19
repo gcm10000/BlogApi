@@ -20,7 +20,7 @@ public class AddCategoryCommandHandler : IRequestHandler<AddCategoryCommand, Cat
 
     public async Task<CategoryDto> Handle(AddCategoryCommand request, CancellationToken cancellationToken)
     {
-        var tenancyId = _currentUserService.GetCurrentTenancy();
+        var tenancyId = _currentUserService.GetCurrentTenancyDomainId();
         var category = new Category
         {
             Name = request.Name,

@@ -1,6 +1,6 @@
 ﻿using BlogApi.Application.Auth.Dto;
+using BlogApi.Application.Infrastructure.Identity.Models;
 using BlogApi.Application.Interfaces;
-using BlogApi.Infrastructure.Identity.Models;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
@@ -40,7 +40,10 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
         var userDto = new UserDto
         {
             Id = user.AuthorId,
+            IsMainTenancy = user.IsMainTenancy,
             Name = user.Name,
+            TenancyDomainId = user.TenancyDomainId,
+            TenancyDomainName = user.TenancyDomainName,
             Email = user.Email,
             Role = user.Role,
             CreatedAt = user.CreatedAt,

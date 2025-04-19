@@ -6,7 +6,7 @@ using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Entities;
 using BlogApi.Application.RegisterPostView;
 
-namespace BlogApi.Application.Posts.Queries.GetPostById;
+namespace BlogApi.Application.Posts.Queries.GetPostBySlug;
 
 public class GetPostBySlugQueryHandler : IRequestHandler<GetPostBySlugQuery, PostDto?>
 {

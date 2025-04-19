@@ -189,6 +189,9 @@ namespace BlogApi.Application.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<bool>("IsMainTenancy")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<int>("MainAuthorId")
                         .HasColumnType("int");
 

@@ -34,6 +34,7 @@ public class UsersController : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(PagedResponse<UserDto>), StatusCodes.Status200OK)]
     [Authorize(Roles = RoleConstants.RootAdminAndAdministrator)]
+    [RequireApiScope("users:getusers")]
     public async Task<IActionResult> GetUsers([FromQuery] GetUsersQuery query)
     {
         var result = await _mediator.Send(query);
@@ -51,6 +52,7 @@ public class UsersController : ControllerBase
     [Authorize(Roles = RoleConstants.RootAdminAndAdministrator)]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [RequireApiScope("users:getuserbyid")]
     public async Task<IActionResult> GetUserById(int id)
     {
         var result = await _mediator.Send(new GetUserByIdQuery { Id = id });
@@ -72,6 +74,7 @@ public class UsersController : ControllerBase
     [Authorize(Roles = RoleConstants.RootAdminAndAdministrator)]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [RequireApiScope("users:createuser")]
     public async Task<IActionResult> CreateUser([FromRoute] int tenancyId, [FromBody] CreateUserCommand command)
     {
         var result = await _mediator.Send(command);

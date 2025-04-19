@@ -1,8 +1,8 @@
 ﻿using BlogApi.Application.Auth.Dto;
 using BlogApi.Application.Common;
 using BlogApi.Application.Infrastructure.Data;
+using BlogApi.Application.Infrastructure.Identity.Models;
 using BlogApi.Application.Interfaces;
-using BlogApi.Infrastructure.Identity.Models;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +27,7 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, PagedResponse
 
     public async Task<PagedResponse<List<UserDto>>> Handle(GetUsersQuery request, CancellationToken cancellationToken)
     {
-        var currentTenancy = _currentUserService.GetCurrentTenancy();
+        var currentTenancy = _currentUserService.GetCurrentTenancyDomainId();
 
         // Query de usuários da tenancy atual
         var query = _userManager.Users
@@ -64,6 +64,9 @@ public class GetUsersQueryHandler : IRequestHandler<GetUsersQuery, PagedResponse
         {
             Id = u.AuthorId,
             Name = u.Name,
+            TenancyDomainId = u.TenancyDomainId,
+            IsMainTenancy = u.IsMainTenancy,
+            TenancyDomainName = u.TenancyDomainName,
             Email = u.Email,
             Role = u.Role,
             Posts = postCounts.TryGetValue(u.AuthorId, out var count) ? count : 0,

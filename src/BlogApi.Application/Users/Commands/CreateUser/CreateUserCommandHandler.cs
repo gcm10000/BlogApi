@@ -1,9 +1,9 @@
 ﻿using BlogApi.Application.Auth.Dto;
 using BlogApi.Application.Infrastructure.Data;
+using BlogApi.Application.Infrastructure.Identity.Data;
+using BlogApi.Application.Infrastructure.Identity.Models;
 using BlogApi.Application.Interfaces;
 using BlogApi.Domain.Entities;
-using BlogApi.Infrastructure.Identity.Data;
-using BlogApi.Infrastructure.Identity.Models;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
@@ -30,7 +30,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserD
 
     public async Task<UserDto> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        var tenancyId = _currentUserService.GetCurrentTenancy();
+        var tenancyId = _currentUserService.GetCurrentTenancyDomainId();
 
         await using var transactionBlogDb = await _context.Database.BeginTransactionAsync(cancellationToken);
         await using var transactionIdentityDb = await _identityContext.Database.BeginTransactionAsync(cancellationToken);
@@ -52,6 +52,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserD
             var user = new ApplicationUser
             {
                 Name = request.Name,
+                TenancyDomainName = request.Name,
                 PasswordChangeRequired = true,
                 Role = request.Role,
                 UserName = request.Email,
@@ -83,7 +84,10 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, UserD
             {
                 Id = user.AuthorId,
                 Email = user.Email,
+                IsMainTenancy = user.IsMainTenancy,
                 Name = author.Name,
+                TenancyDomainId = user.TenancyDomainId,
+                TenancyDomainName = user.TenancyDomainName,
                 Role = request.Role,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow

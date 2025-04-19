@@ -29,7 +29,7 @@ public class UpdatePostCommandHandler : IRequestHandler<UpdatePostCommand, PostD
     {
         _logger.LogInformation("Started handling UpdatePostCommand for Post ID: {PostId}", request.Id);
 
-        var tenancyId = _currentUserService.GetCurrentTenancy();
+        var tenancyId = _currentUserService.GetCurrentTenancyDomainId();
         _logger.LogInformation("Retrieved TenancyId: {TenancyId}", tenancyId);
 
         var post = await _db.Posts

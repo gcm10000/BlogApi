@@ -12,6 +12,7 @@ using BlogApi.Application.Common;
 using BlogApi.Application.DTOs;
 using BlogApi.Application.RegisterPostView;
 using BlogApi.API.Attributes;
+using BlogApi.Application.Posts.Queries.GetPostBySlug;
 
 namespace BlogApi.API.Controllers;
 
@@ -37,7 +38,9 @@ public class PostsController : ControllerBase
     /// <returns>Uma lista paginada de posts.</returns>
     /// <response code="200">Lista de posts retornada com sucesso.</response>
     [HttpGet]
-    [AllowAnonymous]
+    //[AllowAnonymous]
+    [Authorize(Roles = RoleConstants.RootAdminAndAdministratorAndAuthor)]
+    [RequireApiScope("post:getposts")]
     [ProducesResponseType(typeof(PagedResponse<PostDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPosts([FromRoute] int tenancyId, [FromQuery] GetPostsQuery query)
     {
@@ -58,6 +61,7 @@ public class PostsController : ControllerBase
     [AllowAnonymous]
     [ProducesResponseType(typeof(PostDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [RequireApiScope("post:getpostbyid")]
     public async Task<IActionResult> GetPostById([FromRoute] int tenancyId, [FromRoute] int id)
     {
         var post = await _mediator.Send(new GetPostByIdQuery(id, tenancyId));
@@ -83,6 +87,7 @@ public class PostsController : ControllerBase
     [AllowAnonymous]
     [ProducesResponseType(typeof(PostDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [RequireApiScope("post:getpostbyslug")]
     public async Task<IActionResult> GetPostBySlug([FromRoute] int tenancyId, [FromRoute] string slug)
     {
         var post = await _mediator.Send(new GetPostBySlugQuery(slug, tenancyId));
@@ -147,6 +152,7 @@ public class PostsController : ControllerBase
     [ProducesResponseType(typeof(PostDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Consumes("multipart/form-data")]
+    [RequireApiScope("post:createpost")]
     public async Task<IActionResult> CreatePost([FromRoute] int tenancyId, [FromForm] CreatePostCommand command)
     {
         var post = await _mediator.Send(command);
@@ -162,6 +168,7 @@ public class PostsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [Consumes("multipart/form-data")]
+    [RequireApiScope("post:updatepost")]
     public async Task<IActionResult> UpdatePost(int id, [FromForm] UpdatePostCommand command)
     {
         command.Id = id;
@@ -185,6 +192,7 @@ public class PostsController : ControllerBase
     [Authorize(Roles = RoleConstants.RootAdminAndAdministratorAndAuthor)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [RequireApiScope("post:deletepost")]
     public async Task<IActionResult> DeletePost(int id)
     {
         var success = await _mediator.Send(new DeletePostCommand { Id = id });
@@ -207,6 +215,7 @@ public class PostsController : ControllerBase
     [Authorize(Roles = RoleConstants.RootAdminAndAdministratorAndAuthor)]
     [ProducesResponseType(typeof(PostDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [RequireApiScope("post:updatepoststatus")]
     public async Task<IActionResult> UpdatePostStatus(int id, [FromBody] UpdatePostStatusCommand command)
     {
         command.Id = id;

@@ -1,7 +1,7 @@
 using MediatR;
 using BlogApi.Application.DTOs;
 
-namespace BlogApi.Application.Posts.Queries.GetPostById;
+namespace BlogApi.Application.Posts.Queries.GetPostBySlug;
 
 public class GetPostBySlugQuery : IRequest<PostDto?>
 {

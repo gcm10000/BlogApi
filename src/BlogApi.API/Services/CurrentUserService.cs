@@ -33,11 +33,15 @@ public class CurrentUserService : ICurrentUserService
         return result?.Value;
     }
 
-    public int GetCurrentTenancy()
+    public int GetCurrentTenancyDomainId()
     {
-        var claims = GetClaims();
-        var tenancy = claims?.FirstOrDefault(x => x.Type == CustomClaimTypes.TenancyDomainId)!;
-        var currentTenancy = int.Parse(tenancy.Value);
+
+        //var claims = GetClaims();
+        //var tenancy = claims?.FirstOrDefault(x => x.Type == CustomClaimTypes.TenancyDomainId)!;
+        var routeTenancyId = _httpContextAccessor.HttpContext
+            .GetRouteValue("tenancyId")
+            .ToString();
+        var currentTenancy = int.Parse(routeTenancyId);
         return currentTenancy;
     }
 

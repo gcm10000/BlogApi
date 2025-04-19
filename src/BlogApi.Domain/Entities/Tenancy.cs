@@ -8,4 +8,5 @@ public class Tenancy : Entity
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? DeletedAt { get; set; }
     public int MainAuthorId { get; set; }
+    public bool IsMainTenancy { get; set; }
 }

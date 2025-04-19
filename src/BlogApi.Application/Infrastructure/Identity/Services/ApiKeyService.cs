@@ -1,14 +1,14 @@
-﻿using BlogApi.Application.Infrastructure.Identity.Dtos;
+﻿using BlogApi.Application.Infrastructure.Identity.Data;
+using BlogApi.Application.Infrastructure.Identity.Dtos;
 using BlogApi.Application.Interfaces;
-using BlogApi.Infrastructure.Identity.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace BlogApi.Application.Infrastructure.Identity.Services;
-public class ApiKeyServices : IApiKeyServices
+public class ApiKeyService : IApiKeyService
 {
     private readonly IdentityDbContext _context;
 
-    public ApiKeyServices(IdentityDbContext context)
+    public ApiKeyService(IdentityDbContext context)
     {
         _context = context;
     }
@@ -16,7 +16,6 @@ public class ApiKeyServices : IApiKeyServices
     public async Task<ApiKeyValidationResultDto> GetApiKeyAsync(string apiKeyValue)
     {
         var apiKey = await _context.ApiKeys
-            //.Include(k => k.Tenant)
             .Include(k => k.ApiKeyScopes)
                 .ThenInclude(ks => ks.ApiScope)
             .FirstOrDefaultAsync(k => k.Key == apiKeyValue && k.IsActive);
@@ -29,13 +28,14 @@ public class ApiKeyServices : IApiKeyServices
                 ErrorMessage = "API Key inválida"
             };
         }
+        
 
         return new ApiKeyValidationResultDto
         {
             IsValid = true,
             ApiKeyId = apiKey.Id,
-            TenantId = apiKey.TenancyDomainId,
-            //TenantName = apiKey.Tenant.Name,
+            TenancyDomainId = apiKey.TenancyDomainId,
+            Name = apiKey.Name,
             Scopes = apiKey.ApiKeyScopes.Select(s => s.ApiScope.Name).ToList()
         };
     }

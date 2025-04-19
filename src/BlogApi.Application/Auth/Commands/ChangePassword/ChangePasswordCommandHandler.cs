@@ -1,5 +1,5 @@
 ﻿using BlogApi.Application.Auth.Dto;
-using BlogApi.Infrastructure.Identity.Models;
+using BlogApi.Application.Infrastructure.Identity.Models;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 

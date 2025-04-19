@@ -1,5 +1,5 @@
-﻿using BlogApi.Application.Interfaces;
-using BlogApi.Infrastructure.Identity.Models;
+﻿using BlogApi.Application.Infrastructure.Identity.Models;
+using BlogApi.Application.Interfaces;
 using Microsoft.AspNetCore.Identity;
 
 namespace BlogApi.Application.Infrastructure.Identity.Services;

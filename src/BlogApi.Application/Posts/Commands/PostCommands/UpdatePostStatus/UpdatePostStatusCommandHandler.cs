@@ -19,7 +19,7 @@ public class UpdatePostStatusCommandHandler : IRequestHandler<UpdatePostStatusCo
 
     public async Task<PostDto> Handle(UpdatePostStatusCommand request, CancellationToken cancellationToken)
     {
-        var tenancyId = _currentUserService.GetCurrentTenancy();
+        var tenancyId = _currentUserService.GetCurrentTenancyDomainId();
 
         var post = await _db.Posts
             .Include(x => x.Tenancy)

@@ -1,9 +1,8 @@
 ﻿using BlogApi.Application.Infrastructure.Identity.Models;
-using BlogApi.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace BlogApi.Infrastructure.Identity.Data;
+namespace BlogApi.Application.Infrastructure.Identity.Data;
 
 public class IdentityDbContext : IdentityDbContext<ApplicationUser>
 {

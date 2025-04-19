@@ -29,7 +29,7 @@ public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, PostD
     {
         _logger.LogInformation("Starting to handle CreatePostCommand...");
 
-        var tenancyId = _currentUserService.GetCurrentTenancy();
+        var tenancyId = _currentUserService.GetCurrentTenancyDomainId();
         var authorId = _currentUserService.GetCurrentAuthorId();
 
         _logger.LogInformation("Fetched tenancyId: {TenancyId}, authorId: {AuthorId}", tenancyId, authorId);

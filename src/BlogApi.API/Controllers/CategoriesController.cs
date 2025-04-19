@@ -31,6 +31,7 @@ public class CategoriesController : ControllerBase
     [HttpGet]
     [Authorize(Roles = RoleConstants.RootAdminAndAdministratorAndAuthor)]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
+    [RequireApiScope("categories:getcategories")]
     public async Task<IActionResult> GetCategories()
     {
         var categories = await _mediator.Send(new GetCategoriesQuery());
@@ -48,6 +49,7 @@ public class CategoriesController : ControllerBase
     [Authorize(Roles = RoleConstants.RootAdminAndAdministratorAndAuthor)]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [RequireApiScope("categories:addcategory")]
     public async Task<IActionResult> AddCategory([FromBody] AddCategoryCommand command)
     {
         var category = await _mediator.Send(command);
@@ -65,6 +67,7 @@ public class CategoriesController : ControllerBase
     [Authorize(Roles = RoleConstants.RootAdminAndAdministratorAndAuthor)]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [RequireApiScope("categories:deletecategories")]
     public async Task<IActionResult> DeleteCategory(string name)
     {
         var success = await _mediator.Send(new DeleteCategoryCommand { Name = name });

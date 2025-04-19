@@ -22,7 +22,7 @@ public class ExceptionHandlingMiddleware
         }
         catch (BusinessRuleException bre)
         {
-            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            context.Response.StatusCode = (int)HttpStatusCode.UnprocessableEntity;
             context.Response.ContentType = "application/json";
 
             var response = new { message = bre.Message };

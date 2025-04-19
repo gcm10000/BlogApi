@@ -20,7 +20,7 @@ public class GetCategoriesQueryHandler : IRequestHandler<GetCategoriesQuery, Lis
 
     public async Task<List<CategoryDto>> Handle(GetCategoriesQuery request, CancellationToken cancellationToken)
     {
-        var currentTenancy = _currentUserService.GetCurrentTenancy();
+        var currentTenancy = _currentUserService.GetCurrentTenancyDomainId();
 
         var categories = await _context.Categories
             .Where(x => x.TenancyId == currentTenancy)

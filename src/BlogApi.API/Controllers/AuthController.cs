@@ -85,11 +85,19 @@ public class AuthController : ControllerBase
         var claims = _currentUserService.GetClaims();
         var passwordChangeRequired = bool.Parse(claims.FirstOrDefault(x => x.Type == CustomClaimTypes.PasswordChangeRequired)?.Value!);
         var email = claims.FirstOrDefault(x => x.Type == CustomClaimTypes.EmailAddress)?.Value;
+        var name = claims.FirstOrDefault(x => x.Type == CustomClaimTypes.Name)?.Value;
+        var tenancyDomainId = claims.FirstOrDefault(x => x.Type == CustomClaimTypes.TenancyDomainId)?.Value;
+        var tenancyDomainName = claims.FirstOrDefault(x => x.Type == CustomClaimTypes.TenancyDomainName)?.Value;
+        var isMainTenancy = claims.FirstOrDefault(x => x.Type == CustomClaimTypes.IsMainTenancy)?.Value;
 
         var role = _currentUserService.GetCurrentRoleAsString();
         return Ok(new AuthResponse
         {
             Username = email,
+            TenancyId = tenancyDomainId,
+            IsMainTenancy = bool.Parse(isMainTenancy),
+            TenancyName = tenancyDomainName,
+            Name = name,
             Role = role,
             PasswordChangeRequired = passwordChangeRequired
         });

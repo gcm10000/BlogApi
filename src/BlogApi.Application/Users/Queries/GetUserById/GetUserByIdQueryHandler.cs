@@ -1,6 +1,6 @@
 ﻿using BlogApi.Application.Auth.Dto;
+using BlogApi.Application.Infrastructure.Identity.Models;
 using BlogApi.Application.Interfaces;
-using BlogApi.Infrastructure.Identity.Models;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +20,7 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserDto
 
     public async Task<UserDto> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
     {
-        var currentTenancy = _currentUserService.GetCurrentTenancy();
+        var currentTenancy = _currentUserService.GetCurrentTenancyDomainId();
 
         var user = await _userManager.Users
             .Where(x => x.TenancyDomainId == currentTenancy)
@@ -33,6 +33,9 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserDto
         {
             Id = user.AuthorId,
             Name = user.Name,
+            IsMainTenancy = user.IsMainTenancy,
+            TenancyDomainId = user.TenancyDomainId,
+            TenancyDomainName = user.TenancyDomainName,
             Email = user.Email,
             Role = user.Role,
             CreatedAt = user.CreatedAt,

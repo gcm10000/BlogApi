@@ -20,7 +20,7 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
 
     public async Task<DashboardStatsDto> Handle(GetDashboardStatsQuery request, CancellationToken cancellationToken)
     {
-        var tenancyId = _currentUserService.GetCurrentTenancy();
+        var tenancyId = _currentUserService.GetCurrentTenancyDomainId();
         var publishedPosts = await _context.Posts
             .Where(x => x.Tenancy.DeletedAt == null)
             .Where(x => x.TenancyId == tenancyId)

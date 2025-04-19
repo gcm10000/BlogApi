@@ -1,4 +1,4 @@
-﻿using BlogApi.Infrastructure.Identity.Models;
+﻿using BlogApi.Application.Infrastructure.Identity.Models;
 
 namespace BlogApi.Application.Interfaces;
 

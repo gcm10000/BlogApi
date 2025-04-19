@@ -1,8 +1,8 @@
 ﻿using BlogApi.Application.Constants;
 using BlogApi.Application.Exceptions;
 using BlogApi.Application.Infrastructure.Data;
+using BlogApi.Application.Infrastructure.Identity.Data;
 using BlogApi.Application.Tenancies.Dtos;
-using BlogApi.Infrastructure.Identity.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,12 +31,12 @@ public class GetTenancyByIdQueryHandler : IRequestHandler<GetTenancyByIdQuery, T
 
         var applicationUser = await _identityDbContext.Users
             .Where(x => x.TenancyDomainId == request.Id)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync ();
 
         if (applicationUser == null)
             throw new BusinessRuleException("O usuário não existe");
 
-        if (applicationUser.Role != RoleConstants.Administrator)
+        if (applicationUser.Role != RoleConstants.Administrator && applicationUser.Role != RoleConstants.RootAdmin)
             throw new BusinessRuleException("O usuário deve ser um Administrador.");
 
         // Retornar o DTO
@@ -45,6 +45,7 @@ public class GetTenancyByIdQueryHandler : IRequestHandler<GetTenancyByIdQuery, T
             Id = tenancy.Id,
             Name = tenancy.Name,
             Url = tenancy.Url,
+            IsMainTenancy = tenancy.IsMainTenancy,
             MainAdministratorEmail = applicationUser.Email!,
             CreatedAt = tenancy.CreatedAt,
             UpdatedAt = tenancy.UpdatedAt

@@ -1,20 +1,21 @@
 ﻿using BlogApi.Application.Constants;
 using BlogApi.Application.Infrastructure.Identity.Configurations;
+using BlogApi.Application.Infrastructure.Identity.Data;
 using BlogApi.Application.Infrastructure.Identity.DataSeeders;
+using BlogApi.Application.Infrastructure.Identity.Models;
 using BlogApi.Application.Infrastructure.Identity.Services;
 using BlogApi.Application.Interfaces;
-using BlogApi.Infrastructure.Identity.Data;
-using BlogApi.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-namespace BlogApi.Infrastructure.Identity.IoC;
+namespace BlogApi.Application.Infrastructure.Identity.IoC;
 
 public static class IoCExtensions
 {
@@ -25,6 +26,32 @@ public static class IoCExtensions
             var serverVersion = new MySqlServerVersion(new Version(8, 0, 27));
             var connectionString = configuration.GetConnectionString("IDENTITY_DATABASE") ?? configuration["IDENTITY_DATABASE"];
             options.UseMySql(connectionString!, serverVersion);
+        });
+
+        services.AddScoped<ApiKeyService>();
+        //services.AddScoped<IApiKeyService>(provider =>
+        //{
+        //    var service = provider.GetRequiredService<ApiKeyService>();
+        //    var cache = provider.GetRequiredService<IMemoryCache>();
+        //    return new DiskCachedApiKeyService(service, cache);
+        //    //return new CachedApiKeyServices(service, cache);
+        //});
+
+
+        // Registro do HybridCache (aqui você define o caminho onde salvar os arquivos de cache no disco)
+        services.AddSingleton<IHybridCache>(provider =>
+        {
+            var memoryCache = provider.GetRequiredService<IMemoryCache>();
+            var storagePath = Path.Combine(AppContext.BaseDirectory, "cache_store"); // ou outro caminho
+            return new HybridCache(memoryCache, storagePath);
+        });
+
+        // Por fim, registra o decorador como a implementação de IApiKeyService
+        services.AddScoped<IApiKeyService>(provider =>
+        {
+            var inner = provider.GetRequiredService<ApiKeyService>();
+            var hybridCache = provider.GetRequiredService<IHybridCache>();
+            return new CachedApiKeyService(inner, hybridCache); // ou DiskCachedApiKeyService, como preferir chamar
         });
 
         services.AddDefaultIdentity<ApplicationUser>()
@@ -47,7 +74,9 @@ public static class IoCExtensions
         });
 
         services.AddScoped<RoleSeeder>();
+        services.AddScoped<CreateApiKeyService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IApiKeyService, ApiKeyService>();
 
         // Chamada do ConfigureAuthentication
         services.ConfigureAuthentication(configuration);
