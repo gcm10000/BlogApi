@@ -49,7 +49,6 @@ public class PostsController : ControllerBase
     /// <summary>
     /// Obtém um post específico pelo seu ID.
     /// </summary>
-    /// <param name="tenancyId">TenancyId do post a ser recuperado.</param>
     /// <param name="id">ID do post a ser recuperado.</param>
     /// <returns>O post correspondente ao ID fornecido.</returns>
     /// <response code="200">Post encontrado e retornado com sucesso.</response>
@@ -59,9 +58,9 @@ public class PostsController : ControllerBase
     [ProducesResponseType(typeof(PostDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [RequireApiScope("post:getpostbyid")]
-    public async Task<IActionResult> GetPostById([FromRoute] int tenancyId, [FromRoute] int id)
+    public async Task<IActionResult> GetPostById([FromRoute] int id)
     {
-        var post = await _mediator.Send(new GetPostByIdQuery(id, tenancyId));
+        var post = await _mediator.Send(new GetPostByIdQuery(id));
         if (post == null)
             return NotFound();
 

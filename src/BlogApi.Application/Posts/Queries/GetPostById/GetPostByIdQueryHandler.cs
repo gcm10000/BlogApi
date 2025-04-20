@@ -19,13 +19,15 @@ public class GetPostByIdQueryHandler : IRequestHandler<GetPostByIdQuery, PostDto
 
     public async Task<PostDto?> Handle(GetPostByIdQuery request, CancellationToken cancellationToken)
     {
+        var tenancyId = _currentUserService.GetCurrentTenancyDomainId();
+
         var post = await _context.Posts
             .Include(x => x.PostCategories)
                 .ThenInclude(x => x.Category)
             .Include(x => x.Author)
             .Include(x => x.Tenancy)
             .Where(x => x.Tenancy.DeletedAt == null)
-            .Where(x => x.TenancyId == request.TenancyId)
+            .Where(x => x.TenancyId == tenancyId)
             .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
         if (post == null) return null;
 
@@ -33,6 +35,7 @@ public class GetPostByIdQueryHandler : IRequestHandler<GetPostByIdQuery, PostDto
         {
             Id = post.Id,
             Slug = post.Slug,
+            ExternalLink = post.Tenancy.Url.Trim('/') + "/blog/" + post.Slug,
             Title = post.Title,
             AuthorId = post.AuthorId,
             Content = post.Content,

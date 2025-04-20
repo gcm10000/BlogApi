@@ -51,6 +51,7 @@ public class GetPostsQueryHandler : IRequestHandler<GetPostsQuery, PagedResponse
             {
                 Id = p.Id,
                 Author = p.Author.Name,
+                ExternalLink = p.Tenancy.Url.Trim('/') + "/blog/" + p.Slug,
                 Title = p.Title,
                 Excerpt = p.Excerpt,
                 Slug = p.Slug,
