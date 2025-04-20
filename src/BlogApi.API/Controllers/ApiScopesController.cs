@@ -2,9 +2,11 @@
 using BlogApi.API.Helpers;
 using BlogApi.Application.ApiScopes;
 using BlogApi.Application.Constants;
+using BlogApi.Application.Infrastructure.Identity.Dtos;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Xml.Linq;
 
 namespace BlogApi.API.Controllers;
 
@@ -35,12 +37,19 @@ public class ApiScopesController : ControllerBase
         var updated = scopesFromDb.Select(scope =>
         {
             var match = scopesWithRoutes.FirstOrDefault(r => r.Name.StartsWith(scope.Name, StringComparison.OrdinalIgnoreCase));
+            var apiScopeDto = new ApiScopeDto() 
+            { 
+                Id = scope.Id
+            };
+
             if (match != null)
             {
-                scope.Name = match.Name;
+                apiScopeDto.Name = match.Name;
+                apiScopeDto.Endpoint = match.Endpoint;
+                apiScopeDto.Verb = match.Verb;
             }
 
-            return scope;
+            return apiScopeDto;
         }).ToList();
 
         return Ok(updated);

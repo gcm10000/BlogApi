@@ -56,7 +56,7 @@ public class PostsController : ControllerBase
     /// <response code="200">Post encontrado e retornado com sucesso.</response>
     /// <response code="404">Post não encontrado.</response>
     [HttpGet("{id}")]
-    [AllowAnonymous]
+    [Authorize(Roles = RoleConstants.RootAdminAndAdministratorAndAuthor)]
     [ProducesResponseType(typeof(PostDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [RequireApiScope("post:getpostbyid")]
@@ -82,7 +82,7 @@ public class PostsController : ControllerBase
     /// <response code="200">Post encontrado e retornado com sucesso.</response>
     /// <response code="404">Post não encontrado.</response>
     [HttpGet("slug/{slug}")]
-    [AllowAnonymous]
+    [Authorize(Roles = RoleConstants.RootAdminAndAdministratorAndAuthor)]
     [ProducesResponseType(typeof(PostDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [RequireApiScope("post:getpostbyslug")]

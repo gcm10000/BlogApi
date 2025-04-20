@@ -3,14 +3,15 @@ using BlogApi.Application.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
+using BlogApi.Application.Infrastructure.Identity.Dtos;
 
 namespace BlogApi.API.Helpers;
 
 public static class ApiScopeReflectionHelper
 {
-    public static List<ApiScope> ExtractApiScopes(string baseUrl)
+    public static List<ApiScopeDto> ExtractApiScopes(string baseUrl)
     {
-        var result = new List<ApiScope>();
+        var result = new List<ApiScopeDto>();
 
         var controllerTypes = Assembly.GetExecutingAssembly()
             .GetTypes()
@@ -51,9 +52,11 @@ public static class ApiScopeReflectionHelper
                     fullRoute += "/" + methodTemplate.TrimStart('/');
                 }
 
-                result.Add(new ApiScope
+                result.Add(new ApiScopeDto
                 {
-                    Name = $"{scopeAttr.Scope} | {verb} {fullRoute}"
+                    Name = scopeAttr.Scope,
+                    Verb = verb,
+                    Endpoint = fullRoute
                 });
             }
         }
