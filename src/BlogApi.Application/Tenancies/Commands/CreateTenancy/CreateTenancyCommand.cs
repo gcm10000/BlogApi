@@ -3,7 +3,7 @@ using MediatR;
 
 namespace BlogApi.Application.Tenancies.Commands.CreateTenancy;
 
-public class CreateTenancyCommand : IRequest<TenancyDto>
+public class CreateTenancyCommand : IRequest<CreateTenancyDto>
 {
     public string Name { get; set; }
     public string MainAdministratorEmail { get; set; }

@@ -1,7 +1,7 @@
 ﻿using BlogApi.API.Attributes;
 using BlogApi.Application.ApiKeys.Commands;
 using BlogApi.Application.ApiKeys.Commands.GenerateApiKey;
-using BlogApi.Application.ApiKeys.Commands.RevokeApiKey;
+using BlogApi.Application.ApiKeys.Commands.RemoveApiKey;
 using BlogApi.Application.ApiKeys.Dto;
 using BlogApi.Application.ApiKeys.Queries.GetApiKey;
 using BlogApi.Application.ApiKeys.Queries.ListApiKeys;

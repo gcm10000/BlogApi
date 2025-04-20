@@ -8,6 +8,7 @@ using BlogApi.Application.Infrastructure.Data.IoC;
 using BlogApi.Application.Infrastructure.Identity.Data;
 using BlogApi.Application.Infrastructure.Identity.DataSeeders;
 using BlogApi.Application.Infrastructure.Identity.IoC;
+using BlogApi.Application.Infrastructure.Minio.IoC;
 using BlogApi.Application.IoC;
 using BlogApi.Application.Tenancies.Commands.CreateTenancy;
 using MediatR;
@@ -39,6 +40,7 @@ builder.Services.ConfigureWebService(builder.Configuration);
 builder.Services.ConfigureApplication();
 builder.Services.ConfigureData(builder.Configuration);
 builder.Services.ConfigureIdentity(builder.Configuration);
+builder.Services.ConfigureMinio(builder.Configuration);
 
 var app = builder.Build();
 

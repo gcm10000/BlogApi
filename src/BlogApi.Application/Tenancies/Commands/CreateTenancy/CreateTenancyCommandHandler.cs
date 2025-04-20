@@ -14,12 +14,11 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace BlogApi.Application.Tenancies.Commands.CreateTenancy;
 
-public class CreateTenancyCommandHandler : IRequestHandler<CreateTenancyCommand, TenancyDto>
+public class CreateTenancyCommandHandler : IRequestHandler<CreateTenancyCommand, CreateTenancyDto>
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly BlogDbContext _context;
     private readonly IdentityDbContext _identityContext;
-    private readonly IMediator _mediator;
     private readonly CreateApiKeyService _createApiKeyService;
 
 
@@ -29,17 +28,15 @@ public class CreateTenancyCommandHandler : IRequestHandler<CreateTenancyCommand,
         UserManager<ApplicationUser> userManager,
         BlogDbContext context,
         IdentityDbContext identityContext,
-        IMediator mediator,
         CreateApiKeyService createApiKeyService)
     {
         _userManager = userManager;
         _context = context;
         _identityContext = identityContext;
-        _mediator = mediator;
         _createApiKeyService = createApiKeyService;
     }
 
-    public async Task<TenancyDto> Handle(CreateTenancyCommand request, CancellationToken cancellationToken)
+    public async Task<CreateTenancyDto> Handle(CreateTenancyCommand request, CancellationToken cancellationToken)
     {
         // Verificar se o nome da tenancy já existe
         var existingTenancy = await _context.Tenancies

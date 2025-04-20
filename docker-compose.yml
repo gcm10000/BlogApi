@@ -11,6 +11,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ENVIRONMENT_VARIABLE_FRONT_END_URL=https://www.ozos.com.br
+      - ENVIRONMENT_VARIABLE_BACK_END_URL=https://api.ozos.com.br
       - DOTNET_RUNNING_IN_CONTAINER=true
       - VIRTUAL_HOST=api.ozos.com.br
       - VIRTUAL_PORT=8080

@@ -3,7 +3,7 @@ using BlogApi.Application.Infrastructure.Identity.Data;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace BlogApi.Application.ApiKeys.Commands.RevokeApiKey;
+namespace BlogApi.Application.ApiKeys.Commands.RemoveApiKey;
 
 public class RemoveApiKeyCommandHandler : IRequestHandler<RemoveApiKeyCommand, bool>
 {

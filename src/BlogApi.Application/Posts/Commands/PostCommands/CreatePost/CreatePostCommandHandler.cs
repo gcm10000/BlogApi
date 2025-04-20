@@ -9,20 +9,28 @@ using BlogApi.Application.Helpers;
 using BlogApi.Application.Infrastructure;
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
+using BlogApi.Application.Infrastructure.Minio;
+using System.IO;
 
 namespace BlogApi.Application.Posts.Commands.PostCommands.CreatePost;
 
 public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, PostDto>
 {
     private readonly BlogDbContext _context;
+    private readonly MinioStorageService _minioStorageService;
     private readonly ICurrentUserService _currentUserService;
     private readonly ILogger<CreatePostCommandHandler> _logger;
 
-    public CreatePostCommandHandler(BlogDbContext context, ICurrentUserService currentUserService, ILogger<CreatePostCommandHandler> logger)
+    public CreatePostCommandHandler(
+        BlogDbContext context,
+        ICurrentUserService currentUserService,
+        ILogger<CreatePostCommandHandler> logger,
+        MinioStorageService minioStorageService)
     {
         _context = context;
         _currentUserService = currentUserService;
         _logger = logger;
+        _minioStorageService = minioStorageService;
     }
 
     public async Task<PostDto> Handle(CreatePostCommand request, CancellationToken cancellationToken)
@@ -41,30 +49,34 @@ public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, PostD
 
         string uploadPath = string.Empty;
 
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            uploadPath = Directory.GetCurrentDirectory();
-            _logger.LogInformation("Running on Windows, upload path: {UploadPath}", uploadPath);
-        }
-        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        {
-            uploadPath = "/app";
-            _logger.LogInformation("Running on Linux, upload path: {UploadPath}", uploadPath);
-        }
+        //if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        //{
+        //    uploadPath = Directory.GetCurrentDirectory();
+        //    _logger.LogInformation("Running on Windows, upload path: {UploadPath}", uploadPath);
+        //}
+        //else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+        //{
+        //    uploadPath = "/app";
+        //    _logger.LogInformation("Running on Linux, upload path: {UploadPath}", uploadPath);
+        //}
 
-        try
-        {
-            Directory.CreateDirectory(uploadPath);
-            _logger.LogInformation("Created upload directory at: {UploadPath}", uploadPath);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to create upload directory at: {UploadPath}", uploadPath);
-            throw;
-        }
+        //try
+        //{
+        //    Directory.CreateDirectory(uploadPath);
+        //    _logger.LogInformation("Created upload directory at: {UploadPath}", uploadPath);
+        //}
+        //catch (Exception ex)
+        //{
+        //    _logger.LogError(ex, "Failed to create upload directory at: {UploadPath}", uploadPath);
+        //    throw;
+        //}
 
-        var imagePath = await ImageUploader.SaveImageAsync(request.ImageFile, request.ImageUrl, uploadPath);
-        _logger.LogInformation("Image saved at: {ImagePath}", imagePath ?? "No image");
+
+        //var imagePath = await ImageUploader.SaveImageAsync(request.ImageFile, request.ImageUrl, uploadPath);
+        //_logger.LogInformation("Image saved at: {ImagePath}", imagePath ?? "No image");
+
+        await _minioStorageService.EnsureBucketExistsAsync("images");
+        var result = await _minioStorageService.UploadAsync("images", request.ImageFile);
 
         var post = new Post
         {
@@ -72,7 +84,7 @@ public class CreatePostCommandHandler : IRequestHandler<CreatePostCommand, PostD
             Slug = uniqueSlug,
             Content = request.Content,
             Excerpt = request.Excerpt,
-            Image = imagePath ?? "",
+            Image = result,
             AuthorId = authorId,
             Status = request.Status,
             Date = DateTime.UtcNow,
