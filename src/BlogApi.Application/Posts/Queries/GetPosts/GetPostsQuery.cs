@@ -11,9 +11,4 @@ public class GetPostsQuery : IRequest<PagedResponse<List<PostDto>>>
     public string? Status { get; set; } = "";
     public string? Search { get; set; } = "";
     public string? Category { get; set; } = "";
-    public int TenancyId { get; private set; }
-    public void SetTenancyId(int tenancyId)
-    {
-        TenancyId = tenancyId;
-    }
 }

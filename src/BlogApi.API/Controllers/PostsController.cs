@@ -38,13 +38,11 @@ public class PostsController : ControllerBase
     /// <returns>Uma lista paginada de posts.</returns>
     /// <response code="200">Lista de posts retornada com sucesso.</response>
     [HttpGet]
-    //[AllowAnonymous]
     [Authorize(Roles = RoleConstants.RootAdminAndAdministratorAndAuthor)]
     [RequireApiScope("post:getposts")]
     [ProducesResponseType(typeof(PagedResponse<PostDto>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetPosts([FromRoute] int tenancyId, [FromQuery] GetPostsQuery query)
+    public async Task<IActionResult> GetPosts([FromQuery] GetPostsQuery query)
     {
-        query.SetTenancyId(tenancyId);
         var posts = await _mediator.Send(query);
         return Ok(posts);
     }

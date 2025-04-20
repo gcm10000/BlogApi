@@ -11,19 +11,24 @@ namespace BlogApi.Application.Posts.Queries.GetPosts;
 public class GetPostsQueryHandler : IRequestHandler<GetPostsQuery, PagedResponse<List<PostDto>>>
 {
     private readonly BlogDbContext _db;
+    private readonly ICurrentUserService _currentUserService;
 
-    public GetPostsQueryHandler(BlogDbContext db)
+    public GetPostsQueryHandler(BlogDbContext db, ICurrentUserService currentUserService)
     {
         _db = db;
+        _currentUserService = currentUserService;
     }
 
-    public async Task<PagedResponse<List<PostDto>>> Handle(GetPostsQuery request, CancellationToken cancellationToken)
+    public async Task<PagedResponse<List<PostDto>>> Handle(
+        GetPostsQuery request, CancellationToken cancellationToken)
     {
+        var tenancyDomainId = _currentUserService.GetCurrentTenancyDomainId();
+
         var query = _db.Posts
             .Include(x => x.Author)
             .Include(x => x.Tenancy)
             .Where(x => x.Tenancy.DeletedAt == null)
-            .Where(x => x.TenancyId == request.TenancyId)
+            .Where(x => x.TenancyId == tenancyDomainId)
             .Include(p => p.PostCategories)
             .ThenInclude(pc => pc.Category)
             .AsQueryable();
@@ -39,7 +44,7 @@ public class GetPostsQueryHandler : IRequestHandler<GetPostsQuery, PagedResponse
 
         var total = await query.CountAsync(cancellationToken);
         var posts = await query
-            .Where(x => x.TenancyId == request.TenancyId)
+            .Where(x => x.TenancyId == tenancyDomainId)
             .Skip((request.Page - 1) * request.Limit)
             .Take(request.Limit)
             .Select(p => new PostDto

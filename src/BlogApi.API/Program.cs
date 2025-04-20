@@ -114,6 +114,18 @@ app.MapControllers();
 
 using (var scope = app.Services.CreateScope())
 {
+    var dbContext = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
+
+    var seeder = new ApiScopeSeeder(dbContext);
+    await seeder.SeedAsync(new[]
+    {
+        typeof(PostsController).Assembly
+    });
+}
+
+
+using (var scope = app.Services.CreateScope())
+{
     var roleSeeder = scope.ServiceProvider.GetRequiredService<RoleSeeder>();
     await roleSeeder.SeedAsync();
 }
@@ -136,18 +148,6 @@ if (!anyTenancy)
 
     var tenancyResult = await mediator1.Send(tenancy);
 }
-
-using (var scope = app.Services.CreateScope())
-{
-    var dbContext = scope.ServiceProvider.GetRequiredService<IdentityDbContext>();
-
-    var seeder = new ApiScopeSeeder(dbContext);
-    await seeder.SeedAsync(new[] 
-    { 
-        typeof(PostsController).Assembly 
-    });
-}
-
 
 
 

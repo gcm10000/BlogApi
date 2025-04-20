@@ -52,17 +52,23 @@ public class ApiKeyAuthorizationMiddleware
         }
 
         // Verificar escopos exigidos pela rota
-        var requiredScopes = endpoint?.Metadata.GetOrderedMetadata<RequireApiScopeAttribute>();
+        var requiredScopes = endpoint?.Metadata
+            .GetOrderedMetadata<RequireApiScopeAttribute>()
+            .ToList();
 
-        if (requiredScopes?.Any() == true)
+        if (requiredScopes == null || !requiredScopes.Any())
         {
-            var hasAll = requiredScopes.All(rs => result.Scopes.Contains(rs.Scope));
-            if (!hasAll)
-            {
-                context.Response.StatusCode = 403;
-                await context.Response.WriteAsync("Missing required scope(s)");
-                return;
-            }
+            context.Response.StatusCode = 403;
+            await context.Response.WriteAsync("API Key access requires [RequireApiScope].");
+            return;
+        }
+
+        var hasAll = requiredScopes.All(rs => result.Scopes.Contains(rs.Scope));
+        if (!hasAll)
+        {
+            context.Response.StatusCode = 403;
+            await context.Response.WriteAsync("Missing required scope(s)");
+            return;
         }
 
         // Cria identidade fake com claims da API Key
