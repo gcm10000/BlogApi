@@ -17,7 +17,15 @@ public class TenancyAccessFilter : IAsyncActionFilter
         // se o tenancyId da rota não bate com o do usuário, e ele não for MainTenancy, bloqueia
         if (!isMainTenancy && routeTenancyId is not null && routeTenancyId != userTenancyId)
         {
-            context.Result = new ForbidResult("Você não tem permissão para acessar esse domínio.");
+            //context.Result = new ForbidResult("Você não tem permissão para acessar esse domínio.");
+            context.Result = new ObjectResult(new
+            {
+                message = "Você não tem permissão para acessar esse domínio."
+            })
+            {
+                StatusCode = StatusCodes.Status403Forbidden
+            };
+
             return;
         }
 
