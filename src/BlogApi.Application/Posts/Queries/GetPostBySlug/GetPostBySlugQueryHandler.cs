@@ -23,12 +23,14 @@ public class GetPostBySlugQueryHandler : IRequestHandler<GetPostBySlugQuery, Pos
 
     public async Task<PostDto?> Handle(GetPostBySlugQuery request, CancellationToken cancellationToken)
     {
+        var tenancyId = _currentUserService.GetCurrentTenancyDomainId();
         var post = await _context.Posts
             .AsNoTracking()
             .Include(x => x.Author)
             .Include(x => x.Tenancy)
             .Where(x => x.Tenancy.DeletedAt == null)
-            .Where(x => x.TenancyId == request.TenancyId)
+            .Where(x => x.Status == "published")
+            .Where(x => x.TenancyId == tenancyId)
             .FirstOrDefaultAsync(p => p.Slug == request.Slug, cancellationToken);
 
         if (post == null) return null;

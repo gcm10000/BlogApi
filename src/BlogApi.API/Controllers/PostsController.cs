@@ -33,7 +33,6 @@ public class PostsController : ControllerBase
     /// <summary>
     /// Lista todos os posts, com suporte a paginação.
     /// </summary>
-    /// <param name="tenancyId">TenancyId do post a ser recuperado.</param>
     /// <param name="query">Query contendo parâmetros de paginação (página, quantidade de posts, etc).</param>
     /// <returns>Uma lista paginada de posts.</returns>
     /// <response code="200">Lista de posts retornada com sucesso.</response>
@@ -72,9 +71,6 @@ public class PostsController : ControllerBase
     /// <summary>
     /// Obtém um post específico pelo seu Slug dentro de um contexto de tenant (inquilino/cliente).
     /// </summary>
-    /// <param name="tenancyId">
-    /// Identificador do tenant ao qual o post pertence. Esse valor é utilizado para garantir o isolamento dos dados entre diferentes ambientes ou clientes (multitenancy).
-    /// </param>
     /// <param name="slug">
     /// Slug único do post, utilizado como identificador amigável na URL. Geralmente gerado a partir do título do post.
     /// </param>
@@ -86,9 +82,9 @@ public class PostsController : ControllerBase
     [ProducesResponseType(typeof(PostDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [RequireApiScope("post:getpostbyslug")]
-    public async Task<IActionResult> GetPostBySlug([FromRoute] int tenancyId, [FromRoute] string slug)
+    public async Task<IActionResult> GetPostBySlug([FromRoute] string slug)
     {
-        var post = await _mediator.Send(new GetPostBySlugQuery(slug, tenancyId));
+        var post = await _mediator.Send(new GetPostBySlugQuery(slug));
         if (post == null)
             return NotFound();
 
