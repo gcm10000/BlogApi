@@ -33,11 +33,7 @@ public static class IoCExtensions
             var dataConnectionString = configuration.GetConnectionString("DATA_DATABASE") ?? configuration["DATA_DATABASE"];
 
             var connectionString = dataConnectionString ?? configuration.GetConnectionString("Data");
-
-            var serverVersion = new MySqlServerVersion(new Version(8, 0, 27));
-
-            optionsBuilder.UseMySql(connectionString, serverVersion);
-
+            optionsBuilder.UseNpgsql(connectionString);
         }
     }
 }

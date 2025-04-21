@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -23,9 +24,8 @@ public static class IoCExtensions
     {
         services.AddDbContext<IdentityDbContext>(options =>
         {
-            var serverVersion = new MySqlServerVersion(new Version(8, 0, 27));
             var connectionString = configuration.GetConnectionString("IDENTITY_DATABASE") ?? configuration["IDENTITY_DATABASE"];
-            options.UseMySql(connectionString!, serverVersion);
+            options.UseNpgsql(connectionString);
         });
 
         services.AddScoped<ApiKeyService>();

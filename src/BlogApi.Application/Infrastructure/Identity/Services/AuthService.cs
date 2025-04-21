@@ -3,7 +3,6 @@ using BlogApi.Application.Constants;
 using BlogApi.Application.Infrastructure.Identity.Configurations;
 using BlogApi.Application.Infrastructure.Identity.Models;
 using BlogApi.Application.Interfaces;
-using BlogApi.Application.Migrations.IdentityDb;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;

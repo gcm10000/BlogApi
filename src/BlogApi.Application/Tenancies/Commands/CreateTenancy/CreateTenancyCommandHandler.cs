@@ -60,7 +60,7 @@ public class CreateTenancyCommandHandler : IRequestHandler<CreateTenancyCommand,
                 Url = request.Url,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                IsMainTenancy = isTenancyTableEmpty
+                IsMainTenancy = isTenancyTableEmpty,
             };
 
             // Adicionar a tenancy ao contexto e salvar
@@ -76,6 +76,11 @@ public class CreateTenancyCommandHandler : IRequestHandler<CreateTenancyCommand,
             };
 
             _context.Authors.Add(author);
+
+            await _context.SaveChangesAsync(cancellationToken);
+
+            tenancy.MainAuthorId = author.Id;
+
             await _context.SaveChangesAsync(cancellationToken);
 
             // Cria o ApplicationUser
@@ -129,6 +134,7 @@ public class CreateTenancyCommandHandler : IRequestHandler<CreateTenancyCommand,
                 Id = tenancy.Id,
                 Url = tenancy.Url,
                 Name = tenancy.Name,
+                IsMainTenancy = isTenancyTableEmpty,
                 MainAdministratorEmail = user.Email,
                 CreatedAt = tenancy.CreatedAt,
                 UpdatedAt = tenancy.UpdatedAt,
