@@ -17,8 +17,8 @@ services:
       - VIRTUAL_PORT=8080
       - LETSENCRYPT_HOST=api.ozos.com.br
       - LETSENCRYPT_EMAIL=gabrielc.machado@hotmail.com
-      - ConnectionStrings__DATA_DATABASE=server=mariadb;port=3306;database=blogapi_db;user=bloguser;password=blogpass;
-      - ConnectionStrings__IDENTITY_DATABASE=server=mariadb;port=3306;database=blogapi_db;user=bloguser;password=blogpass;
+      - ConnectionStrings__DATA_DATABASE=Host=ep-silent-fog-a4x2e7sc-pooler.us-east-1.aws.neon.tech;Database=BlogApi;Username=BlogApi_owner;Password=npg_xzwdmT5g7RjP;SSL Mode=Require;Trust Server Certificate=true
+      - ConnectionStrings__IDENTITY_DATABASE=Host=ep-silent-fog-a4x2e7sc-pooler.us-east-1.aws.neon.tech;Database=BlogApi;Username=BlogApi_owner;Password=npg_xzwdmT5g7RjP;SSL Mode=Require;Trust Server Certificate=true
     depends_on:
       - mariadb
     networks:
